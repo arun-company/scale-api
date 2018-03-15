@@ -44,3 +44,49 @@ def user_detail(request, pk):
             serializer.save()
             return JsonResponse(serializer.data, status=201)
         return JsonResponse(serializer.errors, status=400)
+
+@csrf_exempt
+def user_is_old_member(request, pk):
+    """
+    User Detail
+    """
+    if request.method == 'GET':
+        try:
+            user = User.objects.filter(pk=pk)
+        except User.DoesNotExist:
+            return HttpResponse(status=404)
+
+        serializer = UserSerializer(user, many=True)
+        return JsonResponse(serializer.data, safe=False)
+
+    elif request.method == 'POST':
+        data = JSONParser().parse(request)
+        serializer = UserSerializer(data=data)
+        if serializer.is_valid():
+            serializer.save()
+            return JsonResponse(serializer.data, status=201)
+        return JsonResponse(serializer.errors, status=400)
+
+
+@csrf_exempt
+def user_migrate_account(request, pk):
+    """
+    User Detail
+    """
+    if request.method == 'GET':
+        try:
+            user = User.objects.filter(pk=pk)
+        except User.DoesNotExist:
+            return HttpResponse(status=404)
+
+        serializer = UserSerializer(user, many=True)
+        return JsonResponse(serializer.data, safe=False)
+
+    elif request.method == 'POST':
+        data = JSONParser().parse(request)
+        serializer = UserSerializer(data=data)
+        if serializer.is_valid():
+            serializer.save()
+            return JsonResponse(serializer.data, status=201)
+        return JsonResponse(serializer.errors, status=400)
+
