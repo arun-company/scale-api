@@ -16,14 +16,16 @@ Including another URLconf
 from django.conf.urls import url, include
 from rest_framework import routers
 from tutorial.quickstart import views
-from snippets import views as snap_view
+from tutorial.quickstart import views as main_view
+from health import views as health_view
 
 router = routers.DefaultRouter()
 
 
-router.register(r'users', views.UserViewSet)
-router.register(r'groups', views.GroupViewSet)
 
+router.register(r'groups', views.GroupViewSet)
+router.register(r'1.0/users/', health_view.UserViewList)
+router.register(r'users-data/', main_view.UserViewA)
 # Wire up our API using automatic URL routing.
 # Additionally, we include login URLs for the browsable API.
 urlpatterns = [

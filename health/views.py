@@ -3,7 +3,8 @@ from django.views.decorators.csrf import csrf_exempt
 from rest_framework.renderers import JSONRenderer
 from rest_framework.parsers import JSONParser
 from health.models import User
-from health.serializers import UserSerializer
+from health.serializers import UserSerializer as UserSerial
+from rest_framework import viewsets
 
 @csrf_exempt
 def user_list(request):
@@ -90,3 +91,10 @@ def user_migrate_account(request, pk):
             return JsonResponse(serializer.data, status=201)
         return JsonResponse(serializer.errors, status=400)
 
+
+class UserViewList(viewsets.ModelViewSet):
+    """
+    API endpoint that allows users to be viewed or edited.
+    """
+    queryset = User.objects.all().order_by('created')
+    serializer_class = UserSerial

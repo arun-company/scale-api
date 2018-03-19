@@ -4,4 +4,4 @@ from health.models import User
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ('id', 'account', 'username', 'email', 'nickname', 'gender', 'height', 'image', 'state')
+        fields = ('id', 'account', 'username', 'email','birthday', 'nickname', 'gender', 'height', 'image', 'state')
