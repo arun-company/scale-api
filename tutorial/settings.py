@@ -40,14 +40,10 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework.authtoken',
     'rest_auth',
-    'allauth.socialaccount',
-    'allauth.socialaccount.providers.facebook',
-    'allauth.socialaccount.providers.twitter',
-    'django.contrib.sites',
     'allauth',
     'allauth.account',
+    'django.contrib.sites',
     'rest_auth.registration',
-    'snippets.apps.SnippetsConfig',
     'health.apps.HealthConfig',
 ]
 

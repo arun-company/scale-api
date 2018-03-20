@@ -1,23 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
 
-class Profile(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
-    account = models.CharField(max_length=100, blank=True, default='')
-    # username = models.CharField(max_length=100, blank=True, default='')
-    # password = models.CharField(max_length=255, blank=True, default='')
-    # email = models.CharField(max_length=100)
-    nickname = models.CharField(max_length=100, blank=True, default='')
-    birthday = models.DateTimeField(blank=True)
-    gender = models.SmallIntegerField(default=1)
-    height = models.IntegerField()
-    image = models.CharField(max_length=255)
-    state = models.BooleanField(default=False)
-    created = models.DateTimeField(auto_now_add=True)
-    updated = models.DateTimeField(auto_now_add=True)
-
-    class Meta:
-        ordering = ('created',)
 
 class Account(models.Model):
     app = models.CharField(max_length=32, blank=True, default='')
@@ -155,3 +138,22 @@ class WeightRecord(models.Model):
     class Meta:
         db_table = 'weight_record'
         ordering = ('created',)  
+
+class UserProfile(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    account = models.CharField(max_length=100, blank=True, default='')
+    # username = models.CharField(max_length=100, blank=True, default='')
+    # password = models.CharField(max_length=255, blank=True, default='')
+    # email = models.CharField(max_length=100)
+    nickname = models.CharField(max_length=100, blank=True, default='')
+    birthday = models.DateTimeField(blank=True, default='')
+    gender = models.SmallIntegerField(default=1)
+    height = models.IntegerField()
+    image = models.CharField(max_length=255)
+    state = models.BooleanField(default=False)
+    created = models.DateTimeField(auto_now_add=True)
+    updated = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        db_table = 'user_profile'
+        ordering = ('created',)

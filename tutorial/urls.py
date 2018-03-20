@@ -31,7 +31,7 @@ router.register(r'users-data/', main_view.UserViewA)
 urlpatterns = [
     
     url(r'^', include(router.urls)),
-    url(r'^', include('snippets.urls')),
+    # url(r'^', include('snippets.urls')),
     url(r'^', include('health.urls')),
     url(r'^auth/', include('rest_auth.urls')),
     url(r'^auth/registration/', include('rest_auth.registration.urls'))
