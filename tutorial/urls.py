@@ -33,8 +33,8 @@ urlpatterns = [
     url(r'^', include(router.urls)),
     url(r'^', include('snippets.urls')),
     url(r'^', include('health.urls')),
-    url(r'^rest-auth/', include('rest_auth.urls')),
-    url(r'^rest-auth/registration/', include('rest_auth.registration.urls'))
+    url(r'^auth/', include('rest_auth.urls')),
+    url(r'^auth/registration/', include('rest_auth.registration.urls'))
 
     # url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework'))
 ]

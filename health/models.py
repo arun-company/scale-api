@@ -1,10 +1,12 @@
 from django.db import models
+from django.contrib.auth.models import User
 
-class User(models.Model):
+class Profile(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
     account = models.CharField(max_length=100, blank=True, default='')
-    username = models.CharField(max_length=100, blank=True, default='')
-    password = models.CharField(max_length=255, blank=True, default='')
-    email = models.CharField(max_length=100)
+    # username = models.CharField(max_length=100, blank=True, default='')
+    # password = models.CharField(max_length=255, blank=True, default='')
+    # email = models.CharField(max_length=100)
     nickname = models.CharField(max_length=100, blank=True, default='')
     birthday = models.DateTimeField(blank=True)
     gender = models.SmallIntegerField(default=1)
@@ -15,7 +17,6 @@ class User(models.Model):
     updated = models.DateTimeField(auto_now_add=True)
 
     class Meta:
-        db_table = 'users'
         ordering = ('created',)
 
 class Account(models.Model):
