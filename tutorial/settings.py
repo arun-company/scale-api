@@ -38,6 +38,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
+    'rest_framework.authtoken',
+    'rest_auth',
     'snippets.apps.SnippetsConfig',
     'health.apps.HealthConfig',
 ]
@@ -52,6 +54,12 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
+REST_SESSION_LOGIN = False
+REST_FRAMEWORK = {
+        'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework.authentication.TokenAuthentication',
+    )
+}
 ROOT_URLCONF = 'tutorial.urls'
 
 TEMPLATES = [
@@ -81,7 +89,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.mysql', 
         'NAME': 'scale-api',
         'USER': 'root',
-        'PASSWORD': 'root1234',
+        'PASSWORD': '',
         'HOST': 'localhost',   # Or an IP Address that your DB is hosted on
         'PORT': '3306',
     }

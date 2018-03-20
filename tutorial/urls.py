@@ -29,6 +29,7 @@ router.register(r'users-data/', main_view.UserViewA)
 # Wire up our API using automatic URL routing.
 # Additionally, we include login URLs for the browsable API.
 urlpatterns = [
+    url(r'^rest-auth/', include('rest_auth.urls')),
     url(r'^', include(router.urls)),
     url(r'^', include('snippets.urls')),
     url(r'^', include('health.urls')),
