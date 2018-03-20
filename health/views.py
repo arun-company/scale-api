@@ -25,6 +25,20 @@ class UserList(APIView):
         # return JsonResponse(serializer.data, safe=False)
         return Response(serializer.data)
 
+class UserDetail(APIView):
+    permission_classes = (IsAuthenticated,)
+
+    def get(self, request, user_id):
+        user = get_object_or_404(m.User, id=user_id)
+        # self.check_object_permissions(request, zone)
+        serializer = s.UserSerializer(user)
+        return Response(serializer.data)
+# def get(self, request):
+#     # user = request.user
+#     users = m.User.objects.all()
+#     serializer = s.UserSerializer(users, many=True)
+#     # return JsonResponse(serializer.data, safe=False)
+#     return Response(serializer.data)
 # @csrf_exempt
 # def user_detail(request, pk):
 #     """

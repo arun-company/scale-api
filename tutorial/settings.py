@@ -40,6 +40,13 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework.authtoken',
     'rest_auth',
+    'allauth.socialaccount',
+    'allauth.socialaccount.providers.facebook',
+    'allauth.socialaccount.providers.twitter',
+    'django.contrib.sites',
+    'allauth',
+    'allauth.account',
+    'rest_auth.registration',
     'snippets.apps.SnippetsConfig',
     'health.apps.HealthConfig',
 ]
@@ -53,7 +60,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
-
+SITE_ID = 1 
 REST_SESSION_LOGIN = False
 REST_FRAMEWORK = {
         'DEFAULT_AUTHENTICATION_CLASSES': (
