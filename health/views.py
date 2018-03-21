@@ -54,7 +54,7 @@ class UserRegister(APIView):
             else :
                 u = User.objects.get(id = user_id)
                 u.delete()
-                return Response(profile_seriel._errors, status=400)    
+                return Response(serialized._errors, status=400)    
         else: 
             return Response(serialized._errors, status=400)
 
@@ -73,13 +73,27 @@ class UserRegister(APIView):
         return Response(serializer.data)
 
 class UserDetail(APIView):
-    permission_classes = (IsAuthenticated,)
+    # permission_classes = (IsAuthenticated,)
 
-    def get(self, request, user_id):
-        user = get_object_or_404(m.User, id=user_id)
+    def get(self, request, pk):
+        user = get_object_or_404(User, id=pk)
         # self.check_object_permissions(request, zone)
         serializer = s.UserSerializer(user)
         return Response(serializer.data)
+
+
+class ExistingMember(APIView):
+    # permission_classes = (IsAuthenticated,)
+    def get(self, request, pk):
+        return Response(request.data)
+        user = get_object_or_404(User, id=pk)
+        # self.check_object_permissions(request, zone)
+        serializer = s.UserSerializer(user)
+        return Response(serializer.data)
+
+
+
+    # permission_classes = (IsAuthenticated,)
 # def get(self, request):
 #     # user = request.user
 #     users = m.User.objects.all()
