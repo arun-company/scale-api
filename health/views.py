@@ -7,6 +7,10 @@ from rest_framework.permissions import IsAuthenticated
 from health import models as m
 from django.views.decorators.csrf import csrf_exempt
 from health import serializers as s
+from django.contrib.auth.models import User
+from django.utils.timezone import now
+import json
+
 
 class UserViewList(viewsets.ModelViewSet):
     """
@@ -16,13 +20,56 @@ class UserViewList(viewsets.ModelViewSet):
     serializer_class = s.UserSerializer
 
 class UserList(APIView):
-    permission_classes = (IsAuthenticated,)
 
     def get(self, request):
         # user = request.user
-        users = m.User.objects.all()
+        users = User.objects.all()
         serializer = s.UserSerializer(users, many=True)
         # return JsonResponse(serializer.data, safe=False)
+        return Response(serializer.data)
+
+class UserRegister(APIView):
+
+    def get(self, request):
+        users = User.objects.all()
+        # self.check_object_permissions(request, zone)
+        serializer = s.AuthUserSerilaizer(users, many=True)
+        return Response(serializer.data)
+    def post(self, request):
+        data = request.data
+        serialized = s.CreateUserSerializer(data=data);
+        if serialized.is_valid():
+            serialized.save()
+            new_user = dict(serialized.data)
+            user_id = new_user.get('id')
+            if user_id:
+                profile = m.UserProfile(
+                    account=data['account'],
+                    birthday=data['birthday'],
+                    nickname=data['account'],
+                    user_id=user_id,
+                )
+                profile.save()
+                return Response(serialized.data, status=201)
+            else :
+                u = User.objects.get(id = user_id)
+                u.delete()
+                return Response(profile_seriel._errors, status=400)    
+        else: 
+            return Response(serialized._errors, status=400)
+
+
+        profile = m.UserProfile(
+            account=data['account'],
+            nickname=data['nickname'],
+            birthday='2012-09-04 06:00Z',
+            user_id=3,
+        )
+        profile.save()
+        
+        serializer = s.CreateProfileSerialzer(profile, many=True)
+        return Response(serializer.data)
+        # profile = s.CreateProfileSerialzer(data)
         return Response(serializer.data)
 
 class UserDetail(APIView):

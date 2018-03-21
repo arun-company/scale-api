@@ -1,7 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
 
-
+# Health APP
 class Account(models.Model):
     app = models.CharField(max_length=32, blank=True, default='')
     carrier = models.CharField(max_length=50, blank=True, default='')
@@ -16,9 +16,10 @@ class Account(models.Model):
     created = models.DateTimeField(auto_now_add=True)
     
     class Meta:
-        db_table = 'account'
+        db_table = 'health_account'
         ordering = ('created',)
 
+# Health APP
 class AccountProfile(models.Model):
     account_id = models.CharField(max_length=32, blank=True, default='')
     name = models.CharField(max_length=50, blank=True, default='')
@@ -29,9 +30,9 @@ class AccountProfile(models.Model):
     created = models.DateTimeField(auto_now_add=True)
     
     class Meta:
-        db_table = 'account_profile'
+        db_table = 'health_account_profile'
         ordering = ('created',)
-
+# Health APP
 class Member(models.Model):
     account_id = models.CharField(max_length=32, blank=True, default='')
     name = models.CharField(max_length=50, blank=True, default='')
@@ -44,10 +45,11 @@ class Member(models.Model):
 
     
     class Meta:
-        db_table = 'member'
+        db_table = 'health_member'
         ordering = ('created',)
 
 
+# Health Plus APP
 class Family(models.Model):
     family_no = models.AutoField(primary_key=True)
     family_id = models.CharField(max_length=50, blank=True, default='')
@@ -60,9 +62,10 @@ class Family(models.Model):
     updated = models.DateTimeField(auto_now_add=True)
     
     class Meta:
-        db_table = 'family'
+        db_table = 'healthplus_family'
         ordering = ('created',)
 
+# Health Plus APP
 class FamilyWeight(models.Model):
     seq = models.AutoField(primary_key=True)
     profile_id = models.IntegerField()
@@ -73,9 +76,10 @@ class FamilyWeight(models.Model):
     updated = models.DateTimeField(auto_now_add=True)
     
     class Meta:
-        db_table = 'family_weight'
+        db_table = 'healthplus_family_weight'
         ordering = ('created',)
 
+# Health Plus APP
 class Profile(models.Model):
     profile_id = models.AutoField(primary_key=True)
     family_no = models.IntegerField()
@@ -92,8 +96,8 @@ class Profile(models.Model):
     updated = models.DateTimeField(auto_now_add=True)
     
     class Meta:
-        db_table = 'profile'
-        ordering = ('created',)  
+        db_table = 'healthplus_profile'
+        ordering = ('created',)
 
 class Weight(models.Model):
     account = models.CharField(max_length=100, blank=True, default='')
@@ -109,8 +113,8 @@ class Weight(models.Model):
         db_table = 'weight'
         ordering = ('added',)
 
+# Health APP
 class WeightRecord(models.Model):
-
     account_id = models.CharField(max_length=32, blank=True, default='')
     member_id = models.CharField(max_length=32, blank=True, default='')
     device_id = models.CharField(max_length=12, blank=True, default='')
@@ -136,7 +140,7 @@ class WeightRecord(models.Model):
     visceralFatLevel = models.FloatField()
     
     class Meta:
-        db_table = 'weight_record'
+        db_table = 'health_weight_record'
         ordering = ('created',)  
 
 class UserProfile(models.Model):
@@ -146,9 +150,9 @@ class UserProfile(models.Model):
     # password = models.CharField(max_length=255, blank=True, default='')
     # email = models.CharField(max_length=100)
     nickname = models.CharField(max_length=100, blank=True, default='')
-    birthday = models.DateTimeField(blank=True, default='')
+    birthday = models.DateTimeField(default=None, blank=True, null=True)
     gender = models.SmallIntegerField(default=1)
-    height = models.IntegerField()
+    height = models.IntegerField(default=None, blank=True, null=True)
     image = models.CharField(max_length=255)
     state = models.BooleanField(default=False)
     created = models.DateTimeField(auto_now_add=True)

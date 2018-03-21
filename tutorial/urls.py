@@ -24,15 +24,13 @@ router = routers.DefaultRouter()
 
 
 router.register(r'groups', views.GroupViewSet)
-router.register(r'1.0/users/', health_view.UserViewList)
-router.register(r'users-data/', main_view.UserViewA)
 # Wire up our API using automatic URL routing.
 # Additionally, we include login URLs for the browsable API.
 urlpatterns = [
     
     url(r'^', include(router.urls)),
     # url(r'^', include('snippets.urls')),
-    url(r'^', include('health.urls')),
+    url(r'^1.0/', include('health.urls')),
     url(r'^auth/', include('rest_auth.urls')),
     url(r'^auth/registration/', include('rest_auth.registration.urls'))
 

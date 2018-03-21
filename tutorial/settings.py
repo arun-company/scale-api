@@ -42,9 +42,12 @@ INSTALLED_APPS = [
     'rest_auth',
     'allauth',
     'allauth.account',
+    'allauth.socialaccount',
     'django.contrib.sites',
     'rest_auth.registration',
     'health.apps.HealthConfig',
+    'allauth.socialaccount.providers.facebook',
+    'allauth.socialaccount.providers.twitter',
 ]
 
 MIDDLEWARE = [
@@ -80,6 +83,11 @@ TEMPLATES = [
         },
     },
 ]
+
+REST_AUTH_SERIALIZERS = {
+    'USER_DETAILS_SERIALIZER': 'health.serializers.UserSerializer',
+}
+AUTH_PROFILE_MODULE = 'health.userprofile'
 
 WSGI_APPLICATION = 'tutorial.wsgi.application'
 
