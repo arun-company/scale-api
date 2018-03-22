@@ -50,7 +50,10 @@ class UserRegister(APIView):
                     user_id=user_id,
                 )
                 profile.save()
-                return Response(serialized.data, status=201)
+                return Response({
+                            "status": 200,
+                            "message": "Account Register successfully!"
+                        }, status=200)
             else :
                 u = User.objects.get(id = user_id)
                 u.delete()
@@ -84,7 +87,19 @@ class UserDetail(APIView):
 
 class ExistingMember(APIView):
     # permission_classes = (IsAuthenticated,)
-    def get(self, request, pk):
+    def post(self, request, pk):
+        data = request.data
+        member = get_object_or_404(m.Account, email=data['email'])
+        if member:
+            return Response({
+                "status" : "Success!",
+                "message": data['email'] + " is an existing member."
+            })
+        else:
+            return Response({
+                "status" : "Success!",
+                "message": data['email'] + " is an existing member."
+            })
         return Response(request.data)
         user = get_object_or_404(User, id=pk)
         # self.check_object_permissions(request, zone)
@@ -93,7 +108,7 @@ class ExistingMember(APIView):
 
 
 class MigrateOldAccount(APIView):
-    def get(self, request, pk):
+    def post(self, request, pk):
         return Response(request.data)
         user = get_object_or_404(User, id=pk)
         # self.check_object_permissions(request, zone)
@@ -102,7 +117,7 @@ class MigrateOldAccount(APIView):
 
 
 class MigrateOldFamilyMember(APIView):
-    def get(self, request, pk):
+    def post(self, request, pk):
         return Response(request.data)
         user = get_object_or_404(User, id=pk)
         # self.check_object_permissions(request, zone)
