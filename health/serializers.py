@@ -3,6 +3,7 @@ from rest_auth.serializers import UserDetailsSerializer
 
 from health import models as m
 from django.contrib.auth.models import User
+from rest_framework.validators import UniqueValidator
 
 class UserProfileSerializer(s.ModelSerializer):
     class Meta:
@@ -29,6 +30,7 @@ class UserSerializer(UserDetailsSerializer):
   
     class Meta(UserDetailsSerializer.Meta):
         fields = '__all__'
+        
     def create(self, validated_data):
         profile_data = validated_data.pop('profile')
         user = User.objects.create(**validated_data)
@@ -53,11 +55,20 @@ class UserSerializer(UserDetailsSerializer):
 
 class CreateUserSerializer(s.ModelSerializer):
     password = s.CharField(write_only=True)
+    email =  s.CharField(max_length=50, validators=[UniqueValidator(queryset=User.objects.all())])
+    
+    def validate_password(self, value):
+        """
+        Check that the blog post is about Django.
+        """
+        if len(value) < 6:
+            raise s.ValidationError("Password Length must me greater or equal 6 chars.")
+        return value
 
     class Meta:
         model = User
         fields = ('id','first_name', 'last_name', 'email', 'password')
-
+    
     def create(self, validated_data):
         user = User(
             email=validated_data['email'],
@@ -80,9 +91,3 @@ class CreateProfileSerialzer(s.ModelSerializer):
         )
         profile.save()
         return profile
-
-# class UserSerializer(serializers.ModelSerializer):
-#     city = serializers.CharField(source='myuser.city')
-#     class Meta:
-#         model = User
-#         fields = ('id', 'username', 'password', 'first_name', 'last_name', 'email', 'city')
