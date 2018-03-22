@@ -46,7 +46,16 @@ class UserInfo(APIView):
 
         return Response({
             "messesge": "Update Fail!"
-        }, 400)    
+        }, 400)
+    def delete(self, request, pk):
+        user = get_object_or_404(User, id=pk)
+        if user.delete():
+            return Response({
+                "messesge": "Delete Successfully!"
+            }, 200)
+        return Response({
+            "messesge": "Update Fail!"
+        }, 400)
 
 class UserRegister(APIView):
 
