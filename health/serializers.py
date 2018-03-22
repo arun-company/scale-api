@@ -7,7 +7,12 @@ from django.contrib.auth.models import User
 class UserProfileSerializer(s.ModelSerializer):
     class Meta:
         model = m.UserProfile
-        fields = ('id', 'account','birthday', 'nickname', 'gender', 'height', 'image', 'state')
+        fields = ('account','birthday', 'nickname', 'gender', 'height', 'image', 'state')
+
+class ProfileSerializer(s.ModelSerializer):
+    class Meta:
+        model = m.UserProfile
+        fields = ('account','birthday', 'nickname', 'gender', 'height', 'image', 'state')
 
 
 class AuthUserSerilaizer(s.ModelSerializer):
@@ -20,39 +25,29 @@ class AuthUserSerilaizer(s.ModelSerializer):
 
 
 class UserSerializer(UserDetailsSerializer):
-
-    account = s.CharField(source="userprofile.account")
-    nickname = s.CharField(source="userprofile.nickname")
-    image = s.CharField(source="userprofile.image")
-    state = s.IntegerField(source="userprofile.state")
-    gender = s.IntegerField(source="userprofile.gender")
-    birthday = s.DateTimeField(source="userprofile.birthday")
-
+    # profileS = ProfileSerializer()
+  
     class Meta(UserDetailsSerializer.Meta):
-        fields = UserDetailsSerializer.Meta.fields + ('account','nickname','gender','image','state','birthday',)
-
+        fields = '__all__'
+    def create(self, validated_data):
+        profile_data = validated_data.pop('profile')
+        user = User.objects.create(**validated_data)
+        m.UserProfile.objects.create(user=user, **profile_data)
+        return user
     def update(self, instance, validated_data):
-        profile_data = validated_data.pop('userprofile', {})
-        account = profile_data.get('account')
-        nickname = profile_data.get('nickname')
-        image = profile_data.get('image')
-        state = profile_data.get('state')
-        birthday = profile_data.get('birthday')
-        gender = profile_data.get('gender')
+        profile_data = validated_data.pop('profile')
+        # Unless the application properly enforces that this field is
+        # always set, the follow could raise a `DoesNotExist`, which
+        # would need to be handled.
+        profile = instance.profile
 
-        instance = super(UserSerializer, self).update(instance, validated_data)
+        instance.username = validated_data.get('username', instance.username)
+        instance.email = validated_data.get('email', instance.email)
+        instance.save()
+        profile.save()
 
-        # get and update user profile
-        profile = instance.UserProfile
-        if profile_data:
-            profile.account = account
-            profile.nickname = nickname
-            profile.state = state
-            profile.image = image
-            profile.gender = gender
-            profile.birthday = birthday
-            profile.save()
         return instance
+
 
 
 

@@ -38,9 +38,15 @@ class UserInfo(APIView):
         return Response(serializer.data)
     def post(self, request, pk):
         user = get_object_or_404(User, id=pk)
-        # self.check_object_permissions(request, zone)
-        serializer = s.UserSerializer(user)
-        return Response(serializer.data)
+        data = request.data
+        serializer = s.UserSerializer(User,data=data)
+        if serializer.is_valid():            
+            serializer.save()
+            return Response(serializer.data)
+
+        return Response({
+            "messesge": "Update Fail!"
+        }, 400)    
 
 class UserRegister(APIView):
 
