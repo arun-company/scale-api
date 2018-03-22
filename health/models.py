@@ -3,16 +3,17 @@ from django.contrib.auth.models import User
 
 # Health APP
 class Account(models.Model):
-    app = models.CharField(max_length=32, blank=True, default='')
-    carrier = models.CharField(max_length=50, blank=True, default='')
-    username = models.CharField(max_length=50, blank=True, default='')
-    password = models.CharField(max_length=255, blank=True, default='')
-    email = models.CharField(max_length=127, blank=True, default='')
-    mobile = models.CharField(max_length=11, blank=True, default='')
-    name = models.CharField(max_length=127, blank=True, default='')
-    homedir = models.CharField(max_length=255, blank=True, default='')
+    app = models.CharField(max_length=32, blank=True,default=None,null=True)
+    acc_id = models.CharField(max_length=255, blank=True,default=None,null=True)
+    carrier = models.CharField(max_length=50, blank=True,default=None,null=True)
+    username = models.CharField(max_length=50, blank=True,default=None,null=True)
+    password = models.CharField(max_length=255, blank=True,default=None,null=True)
+    email = models.CharField(max_length=127, blank=True,default=None,null=True)
+    mobile = models.CharField(max_length=11, blank=True, null=True)
+    name = models.CharField(max_length=127, blank=True,default=None,null=True)
+    homedir = models.CharField(max_length=255, blank=True,default=None,null=True)
     ts = models.BigIntegerField(blank=True)
-    client_id = models.CharField(max_length=32, blank=True, default='')
+    client_id = models.CharField(max_length=32, blank=True,default=None,null=True)
     created = models.DateTimeField(auto_now_add=True)
     
     class Meta:
@@ -21,12 +22,13 @@ class Account(models.Model):
 
 # Health APP
 class AccountProfile(models.Model):
-    account_id = models.CharField(max_length=32, blank=True, default='')
-    name = models.CharField(max_length=50, blank=True, default='')
-    value = models.CharField(max_length=255, blank=True, default='')
+    profile_id = models.CharField(max_length=255, blank=True,default=None,null=True)
+    account_id = models.CharField(max_length=32, blank=True,default=None,null=True)
+    name = models.CharField(max_length=50, blank=True,default=None,null=True)
+    value = models.CharField(max_length=255, blank=True,default=None,null=True)
     deleted = models.BooleanField(default=False)
     ts = models.BigIntegerField(blank=True)
-    client_id = models.CharField(max_length=32, blank=True, default='')
+    client_id = models.CharField(max_length=32, blank=True,default=None,null=True)
     created = models.DateTimeField(auto_now_add=True)
     
     class Meta:
@@ -34,13 +36,14 @@ class AccountProfile(models.Model):
         ordering = ('created',)
 # Health APP
 class Member(models.Model):
-    account_id = models.CharField(max_length=32, blank=True, default='')
-    name = models.CharField(max_length=50, blank=True, default='')
+    member_id = models.CharField(max_length=255, blank=True,default=None,null=True)
+    account_id = models.CharField(max_length=32, blank=True,default=None,null=True)
+    name = models.CharField(max_length=50, blank=True,default=None,null=True)
     birthday = models.DateTimeField()
     sex = models.IntegerField()
     deleted = models.BooleanField(default=False)
     ts = models.BigIntegerField(blank=True)
-    client_id = models.CharField(max_length=32, blank=True, default='')
+    client_id = models.CharField(max_length=32, blank=True,default=None,null=True)
     created = models.DateTimeField(auto_now_add=True)
 
     
@@ -52,11 +55,11 @@ class Member(models.Model):
 # Health Plus APP
 class Family(models.Model):
     family_no = models.AutoField(primary_key=True)
-    family_id = models.CharField(max_length=50, blank=True, default='')
-    email = models.CharField(max_length=127, blank=True, default='')
-    password = models.CharField(max_length=255, blank=True, default='')
-    family_name = models.CharField(max_length=50, blank=True, default='')
-    image = models.CharField(max_length=255, blank=True, default='')
+    family_id = models.CharField(max_length=50, blank=True,default=None,null=True)
+    email = models.CharField(max_length=127, blank=True,default=None,null=True)
+    password = models.CharField(max_length=255, blank=True,default=None,null=True)
+    family_name = models.CharField(max_length=50, blank=True,default=None,null=True)
+    image = models.CharField(max_length=255, blank=True,default=None,null=True)
     state = models.BooleanField(default=False)
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now_add=True)
@@ -83,14 +86,14 @@ class FamilyWeight(models.Model):
 class Profile(models.Model):
     profile_id = models.AutoField(primary_key=True)
     family_no = models.IntegerField()
-    nickname = models.CharField(max_length=100, blank=True, default='')
+    nickname = models.CharField(max_length=100, blank=True,default=None,null=True)
     birth = models.IntegerField()
     gender = models.SmallIntegerField(default=1)
     height = models.IntegerField()
     image = models.CharField(max_length=255)
-    secret = models.CharField(max_length=127, blank=True, default='')
-    secret_email = models.CharField(max_length=127, blank=True, default='')
-    secret_pw = models.CharField(max_length=127, blank=True, default='')
+    secret = models.CharField(max_length=127, blank=True,default=None,null=True)
+    secret_email = models.CharField(max_length=127, blank=True,default=None,null=True)
+    secret_pw = models.CharField(max_length=127, blank=True,default=None,null=True)
     state = models.BooleanField(default=False)
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now_add=True)
@@ -100,14 +103,15 @@ class Profile(models.Model):
         ordering = ('created',)
 
 class Weight(models.Model):
-    account = models.CharField(max_length=100, blank=True, default='')
-    weight = models.FloatField()
-    BMI = models.FloatField()
-    BFR = models.FloatField()
-    MMR = models.FloatField()
-    BD = models.FloatField()
+    account = models.CharField(max_length=100, blank=True,default=None,null=True)
+    weight = models.FloatField(blank=True,default=None,null=True)
+    BMI = models.FloatField(blank=True,default=None,null=True)
+    BFR = models.FloatField(blank=True,default=None,null=True)
+    BWR = models.FloatField(blank=True,default=None,null=True)
+    MMR = models.FloatField(blank=True,default=None,null=True)
+    BD = models.FloatField(blank=True,default=None,null=True)
     legacy = models.SmallIntegerField()
-    mearsured = models.DateTimeField(auto_now_add=True)
+    measured = models.DateTimeField(auto_now_add=True)
     added = models.DateTimeField(auto_now_add=True)
     class Meta:
         db_table = 'weight'
@@ -115,10 +119,11 @@ class Weight(models.Model):
 
 # Health APP
 class WeightRecord(models.Model):
-    account_id = models.CharField(max_length=32, blank=True, default='')
-    member_id = models.CharField(max_length=32, blank=True, default='')
-    device_id = models.CharField(max_length=12, blank=True, default='')
-    device_sn = models.CharField(max_length=16, blank=True, default='')
+    weight_record_id = models.CharField(max_length=255, blank=True,default=None,null=True)
+    account_id = models.CharField(max_length=32, blank=True,default=None,null=True)
+    member_id = models.CharField(max_length=32, blank=True,default=None,null=True)
+    device_id = models.CharField(max_length=12, blank=True,default=None,null=True)
+    device_sn = models.CharField(max_length=16, blank=True,default=None,null=True)
     measurement_date = models.DateTimeField(auto_now_add=True)
     weight = models.FloatField()
     bmi = models.FloatField()
@@ -128,12 +133,12 @@ class WeightRecord(models.Model):
     body_water = models.FloatField()
     muscle = models.FloatField()
     bone = models.FloatField()
-    remark = models.CharField(max_length=255, blank=True, default='')
+    remark = models.CharField(max_length=255, blank=True,default=None,null=True)
     deleted = models.BooleanField(default=False)
     ts = models.BigIntegerField(blank=True)
-    client_id = models.CharField(max_length=32, blank=True, default='')
+    client_id = models.CharField(max_length=32, blank=True,default=None,null=True)
     created = models.DateTimeField(auto_now_add=True)
-    utc = models.CharField(max_length=255, blank=True, default='')
+    utc = models.CharField(max_length=255, blank=True,default=None,null=True)
     userNo = models.IntegerField()
     pbf_state = models.IntegerField()
     basalMetabolism = models.FloatField()
@@ -145,11 +150,11 @@ class WeightRecord(models.Model):
 
 class UserProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    account = models.CharField(max_length=100, blank=True, default='')
-    # username = models.CharField(max_length=100, blank=True, default='')
-    # password = models.CharField(max_length=255, blank=True, default='')
+    account = models.CharField(max_length=100, blank=True,default=None,null=True)
+    # username = models.CharField(max_length=100, blank=True,default=None,null=True)
+    # password = models.CharField(max_length=255, blank=True,default=None,null=True)
     # email = models.CharField(max_length=100)
-    nickname = models.CharField(max_length=100, blank=True, default='')
+    nickname = models.CharField(max_length=100, blank=True,default=None,null=True)
     birthday = models.DateTimeField(default=None, blank=True, null=True)
     gender = models.SmallIntegerField(default=1)
     height = models.IntegerField(default=None, blank=True, null=True)
