@@ -9,6 +9,7 @@ from django.views.decorators.csrf import csrf_exempt
 from health import serializers as s
 from django.contrib.auth.models import User
 from django.utils.timezone import now
+from rest_framework import status
 import json
 
 
@@ -36,17 +37,25 @@ class UserInfo(APIView):
         # self.check_object_permissions(request, zone)
         serializer = s.UserSerializer(user)
         return Response(serializer.data)
+    def put(self, request, pk, format=None):
+        user = get_object_or_404(User,id=pk)
+        serializer = s.UpdateUserSerial(user, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
     def post(self, request, pk):
         user = get_object_or_404(User, id=pk)
         data = request.data
-        serializer = s.UserSerializer(User,data=data)
+        serializer = s.CreateUserSerializer(user,data=data)
         if serializer.is_valid():            
             serializer.save()
             return Response(serializer.data)
-
-        return Response({
-            "messesge": "Update Fail!"
-        }, 400)
+        else:
+            return Response({
+                "messesge": "Update Fail!"
+            }, 400)
     def delete(self, request, pk):
         user = get_object_or_404(User, id=pk)
         if user.delete():

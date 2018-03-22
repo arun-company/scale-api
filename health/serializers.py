@@ -76,7 +76,14 @@ class CreateUserSerializer(s.ModelSerializer):
         )
         user.set_password(validated_data['password'])
         user.save()
-        return user;
+        return user
+
+class UpdateUserSerial(s.ModelSerializer):
+    email =  s.CharField(max_length=50, validators=[UniqueValidator(queryset=User.objects.all())])
+    
+    class Meta:
+        model = User
+        fields = ('id','first_name', 'last_name', 'email')
 
 class CreateProfileSerialzer(s.ModelSerializer):
     class Meta: 
