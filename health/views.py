@@ -28,6 +28,20 @@ class UserList(APIView):
         # return JsonResponse(serializer.data, safe=False)
         return Response(serializer.data)
 
+class UserInfo(APIView):
+    # permission_classes = (IsAuthenticated,)
+
+    def get(self, request, pk):
+        user = get_object_or_404(User, id=pk)
+        # self.check_object_permissions(request, zone)
+        serializer = s.UserSerializer(user)
+        return Response(serializer.data)
+    def post(self, request, pk):
+        user = get_object_or_404(User, id=pk)
+        # self.check_object_permissions(request, zone)
+        serializer = s.UserSerializer(user)
+        return Response(serializer.data)
+
 class UserRegister(APIView):
 
     def get(self, request):
@@ -52,7 +66,7 @@ class UserRegister(APIView):
                 profile.save()
                 return Response({
                             "status": 200,
-                            "message": "Account Register successfully!"
+                            "message": "Account register successfully!"
                         }, status=200)
             else :
                 u = User.objects.get(id = user_id)
@@ -75,14 +89,6 @@ class UserRegister(APIView):
         # profile = s.CreateProfileSerialzer(data)
         return Response(serializer.data)
 
-class UserDetail(APIView):
-    # permission_classes = (IsAuthenticated,)
-
-    def get(self, request, pk):
-        user = get_object_or_404(User, id=pk)
-        # self.check_object_permissions(request, zone)
-        serializer = s.UserSerializer(user)
-        return Response(serializer.data)
 
 
 class ExistingMember(APIView):
