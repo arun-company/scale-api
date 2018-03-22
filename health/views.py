@@ -92,7 +92,22 @@ class ExistingMember(APIView):
         return Response(serializer.data)
 
 
+class MigrateOldAccount(APIView):
+    def get(self, request, pk):
+        return Response(request.data)
+        user = get_object_or_404(User, id=pk)
+        # self.check_object_permissions(request, zone)
+        serializer = s.UserSerializer(user)
+        return Response(serializer.data)
 
+
+class MigrateOldFamilyMember(APIView):
+    def get(self, request, pk):
+        return Response(request.data)
+        user = get_object_or_404(User, id=pk)
+        # self.check_object_permissions(request, zone)
+        serializer = s.UserSerializer(user)
+        return Response(serializer.data)
     # permission_classes = (IsAuthenticated,)
 # def get(self, request):
 #     # user = request.user
