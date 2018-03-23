@@ -149,6 +149,13 @@ class MigrateOldAccount(APIView):
             oldUser = m.Account.objects.filter(email=data['email'])
         else:
             oldUser = m.Family.objects.filter(email=data['email'])
+            family_no = oldUser[0].family_no
+            print(family_no)
+            allProfile = m.Profile.objects.filter(family_no=family_no)
+            serializer = s.FamilyProfileSerializer(allProfile, many=True)
+            return Response({
+                "members": serializer.data
+            })
         # print(oldUser)
         if (oldUser):
             return Response({
@@ -166,76 +173,3 @@ class MigrateOldFamilyMember(APIView):
         # self.check_object_permissions(request, zone)
         serializer = s.UserSerializer(user)
         return Response(serializer.data)
-    # permission_classes = (IsAuthenticated,)
-# def get(self, request):
-#     # user = request.user
-#     users = m.User.objects.all()
-#     serializer = s.UserSerializer(users, many=True)
-#     # return JsonResponse(serializer.data, safe=False)
-#     return Response(serializer.data)
-# @csrf_exempt
-# def user_detail(request, pk):
-#     """
-#     User Detail
-#     """
-#     if request.method == 'GET':
-#         try:
-#             user = User.objects.filter(pk=pk)
-#         except User.DoesNotExist:
-#             return HttpResponse(status=404)
-
-#         serializer = UserSerializer(user, many=True)
-#         return JsonResponse(serializer.data, safe=False)
-
-#     elif request.method == 'POST':
-#         data = JSONParser().parse(request)
-#         serializer = UserSerializer(data=data)
-#         if serializer.is_valid():
-#             serializer.save()
-#             return JsonResponse(serializer.data, status=201)
-#         return JsonResponse(serializer.errors, status=400)
-
-# @csrf_exempt
-# def user_is_old_member(request, pk):
-#     """
-#     User Detail
-#     """
-#     if request.method == 'GET':
-#         try:
-#             user = User.objects.filter(pk=pk)
-#         except User.DoesNotExist:
-#             return HttpResponse(status=404)
-
-#         serializer = UserSerializer(user, many=True)
-#         return JsonResponse(serializer.data, safe=False)
-
-#     elif request.method == 'POST':
-#         data = JSONParser().parse(request)
-#         serializer = UserSerializer(data=data)
-#         if serializer.is_valid():
-#             serializer.save()
-#             return JsonResponse(serializer.data, status=201)
-#         return JsonResponse(serializer.errors, status=400)
-
-
-# @csrf_exempt
-# def user_migrate_account(request, pk):
-#     """
-#     User Detail
-#     """
-#     if request.method == 'GET':
-#         try:
-#             user = User.objects.filter(pk=pk)
-#         except User.DoesNotExist:
-#             return HttpResponse(status=404)
-
-#         serializer = UserSerializer(user, many=True)
-#         return JsonResponse(serializer.data, safe=False)
-
-#     elif request.method == 'POST':
-#         data = JSONParser().parse(request)
-#         serializer = UserSerializer(data=data)
-#         if serializer.is_valid():
-#             serializer.save()
-#             return JsonResponse(serializer.data, status=201)
-#         return JsonResponse(serializer.errors, status=400)

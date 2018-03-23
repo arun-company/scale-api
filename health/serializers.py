@@ -24,6 +24,11 @@ class AuthUserSerilaizer(s.ModelSerializer):
     fields = ('email', 'password' )
     write_only_fields = ('password',)
 
+class FamilyProfileSerializer(s.ModelSerializer):
+     class Meta:
+        model = m.Profile
+        fields = ('profile_id','family_no', 'nickname', 'birth', 'gender', 'height', 'state')
+
 
 class UserSerializer(UserDetailsSerializer):
     # profileS = ProfileSerializer()
