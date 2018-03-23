@@ -25,9 +25,12 @@ class AuthUserSerilaizer(s.ModelSerializer):
     write_only_fields = ('password',)
 
 class FamilyProfileSerializer(s.ModelSerializer):
-     class Meta:
+    member_name = s.SerializerMethodField('get_memeber_name')
+    class Meta:
         model = m.Profile
-        fields = ('nickname','secret',)
+        fields = ('member_name','secret',)
+    def get_memeber_name(self, obj):
+        return obj.nickname
 
 class AccountSerializer(s.ModelSerializer):
      class Meta:
