@@ -76,23 +76,21 @@ class UserRegister(APIView):
     def post(self, request):
         if (request.META.get('HTTP_REQUESTOR_ID') == "23810e1b-21c4-46fd-9e8e-e22156dbeb39"):
             data = request.data
-            
+            print(data)
             serialized = s.CreateUserSerializer(data=data)
             if serialized.is_valid():
                 serialized.save()
                 new_user = dict(serialized.data)
                 user_id = new_user.get('id')
+                print(user_id)
                 if user_id:
                     profile = m.UserProfile(
-                        account=data['account'],
-                        birthday=data['birthday'],
-                        nickname=data['account'],
-                        user_id=user_id,
+                        birthday="2010-10-10 01:01",
+                        user_id=user_id
                     )
                     profile.save()
                     return Response({
-                                "status": 200,
-                                "message": "Account register successfully!"
+                                "account_id": profile.account_id
                             }, status=200)
                 else :
                     u = User.objects.get(id = user_id)
@@ -100,20 +98,6 @@ class UserRegister(APIView):
                     return Response(serialized._errors, status=400)    
             else: 
                 return Response(serialized._errors, status=400)
-
-
-            profile = m.UserProfile(
-                account=data['account'],
-                nickname=data['nickname'],
-                birthday='2012-09-04 06:00Z',
-                user_id=3,
-            )
-            profile.save()
-            
-            serializer = s.CreateProfileSerialzer(profile, many=True)
-            return Response(serializer.data)
-            # profile = s.CreateProfileSerialzer(data)
-            return Response(serializer.data)
         else:
             return Response({
                 "Result": "Not Allow!"

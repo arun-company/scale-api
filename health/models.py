@@ -1,5 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
+import uuid
+
 
 # Health APP
 class Account(models.Model):
@@ -60,7 +62,7 @@ class Family(models.Model):
     password = models.CharField(max_length=255, blank=True,default=None,null=True)
     family_name = models.CharField(max_length=50, blank=True,default=None,null=True)
     image = models.CharField(max_length=255, blank=True,default=None,null=True)
-    state = models.BooleanField(default=False)
+    state = models.BooleanField(default=True)
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now_add=True)
     
@@ -74,7 +76,7 @@ class FamilyWeight(models.Model):
     profile_id = models.IntegerField()
     family_no = models.IntegerField()
     weight = models.FloatField()
-    state = models.BooleanField(default=False)
+    state = models.BooleanField(default=True)
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now_add=True)
     
@@ -94,7 +96,7 @@ class Profile(models.Model):
     secret = models.CharField(max_length=127, blank=True,default=None,null=True)
     secret_email = models.CharField(max_length=127, blank=True,default=None,null=True)
     secret_pw = models.CharField(max_length=127, blank=True,default=None,null=True)
-    state = models.BooleanField(default=False)
+    state = models.BooleanField(default=True)
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now_add=True)
     
@@ -103,7 +105,7 @@ class Profile(models.Model):
         ordering = ('created',)
 
 class Weight(models.Model):
-    account = models.CharField(max_length=100, blank=True,default=None,null=True)
+    account_id = models.CharField(max_length=100, blank=True,default=None,null=True)
     weight = models.FloatField(blank=True,default=None,null=True)
     BMI = models.FloatField(blank=True,default=None,null=True)
     BFR = models.FloatField(blank=True,default=None,null=True)
@@ -114,7 +116,7 @@ class Weight(models.Model):
     measured = models.DateTimeField(auto_now_add=True)
     added = models.DateTimeField(auto_now_add=True)
     class Meta:
-        db_table = 'weight'
+        db_table = 'weights'
         ordering = ('added',)
 
 # Health APP
@@ -150,7 +152,7 @@ class WeightRecord(models.Model):
 
 class UserProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    account = models.CharField(max_length=100, blank=True,default=None,null=True)
+    account_id = models.UUIDField(unique=True, default=uuid.uuid4, editable=False)
     # username = models.CharField(max_length=100, blank=True,default=None,null=True)
     # password = models.CharField(max_length=255, blank=True,default=None,null=True)
     # email = models.CharField(max_length=100)
@@ -159,7 +161,7 @@ class UserProfile(models.Model):
     gender = models.SmallIntegerField(default=1)
     height = models.IntegerField(default=None, blank=True, null=True)
     image = models.CharField(max_length=255)
-    state = models.BooleanField(default=False)
+    state = models.BooleanField(default=True)
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now_add=True)
 
