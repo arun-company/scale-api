@@ -133,14 +133,14 @@ class MigrateOldAccount(APIView):
         user = get_object_or_404(User, id=pk)
         data = request.data
         EMAIL_REGEX = re.compile(r"^[A-Za-z0-9\.\+_-]+@[A-Za-z0-9\._-]+\.[a-zA-Z]*$")
-        # print(EMAIL_REGEX.match(data['email']))
-        # print(m.Account.objects.all().filter(email=data['email']))
         if EMAIL_REGEX.match(data['email']):
             oldUser = m.Account.objects.filter(email=data['email'], password=data['password'])
             if (oldUser):
                 serializer = s.AccountSerializer(oldUser, many=True)
+                # TODO: weights at weights table and replace the account with the current user. Delete the account from the Chinese account table.
                 return Response({
-                    "members": serializer.data
+                    "accountConfirmed": True,
+                    "accountType": 1
                 })
         else:
             oldUser = m.Family.objects.filter(email=data['email'])
@@ -149,8 +149,11 @@ class MigrateOldAccount(APIView):
                 # print(family_no)
                 allProfile = m.Profile.objects.filter(family_no=family_no)
                 serializer = s.FamilyProfileSerializer(allProfile, many=True)
+                #2. Health Plus DB : return the list of members that belong to this account, return True for accountConfirmed, return 2 for accountType.
                 return Response({
-                    "members": serializer.data
+                    "accountConfirmed": True,
+                    "accountType": 2,
+                    "familyMembers": serializer.data
                 })
         # print(oldUser)
         if (oldUser):

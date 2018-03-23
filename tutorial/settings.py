@@ -86,6 +86,7 @@ TEMPLATES = [
 
 REST_AUTH_SERIALIZERS = {
     'USER_DETAILS_SERIALIZER': 'health.serializers.UserSerializer',
+    'TOKEN_SERIALIZER': 'health.serializers.TokenSerializer',
 }
 AUTH_PROFILE_MODULE = 'health.userprofile'
 

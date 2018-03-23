@@ -27,7 +27,7 @@ class AuthUserSerilaizer(s.ModelSerializer):
 class FamilyProfileSerializer(s.ModelSerializer):
      class Meta:
         model = m.Profile
-        fields = ('profile_id','family_no', 'nickname', 'birth', 'gender', 'height', 'state', 'secret', 'secret_email', 'secret_pw')
+        fields = ('nickname','secret',)
 
 class AccountSerializer(s.ModelSerializer):
      class Meta:
@@ -117,7 +117,6 @@ class CreateProfileSerialzer(s.ModelSerializer):
         profile = m.UserProfile(
             account=validated_data['account'],
             birthday=validated_data['birthday'],
-            nickname=validated_data['account'],
             user_id=validated_data['user_id'],
         )
         profile.save()
