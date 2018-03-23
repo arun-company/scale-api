@@ -74,44 +74,50 @@ class UserRegister(APIView):
         serializer = s.AuthUserSerilaizer(users, many=True)
         return Response(serializer.data)
     def post(self, request):
-        data = request.data
-        serialized = s.CreateUserSerializer(data=data);
-        if serialized.is_valid():
-            serialized.save()
-            new_user = dict(serialized.data)
-            user_id = new_user.get('id')
-            if user_id:
-                profile = m.UserProfile(
-                    account=data['account'],
-                    birthday=data['birthday'],
-                    nickname=data['account'],
-                    user_id=user_id,
-                )
-                profile.save()
-                return Response({
-                            "status": 200,
-                            "message": "Account register successfully!"
-                        }, status=200)
-            else :
-                u = User.objects.get(id = user_id)
-                u.delete()
-                return Response(serialized._errors, status=400)    
-        else: 
-            return Response(serialized._errors, status=400)
+        if (request.META.get('HTTP_REQUESTOR_ID') == "23810e1b-21c4-46fd-9e8e-e22156dbeb39"):
+            data = request.data
+            
+            serialized = s.CreateUserSerializer(data=data)
+            if serialized.is_valid():
+                serialized.save()
+                new_user = dict(serialized.data)
+                user_id = new_user.get('id')
+                if user_id:
+                    profile = m.UserProfile(
+                        account=data['account'],
+                        birthday=data['birthday'],
+                        nickname=data['account'],
+                        user_id=user_id,
+                    )
+                    profile.save()
+                    return Response({
+                                "status": 200,
+                                "message": "Account register successfully!"
+                            }, status=200)
+                else :
+                    u = User.objects.get(id = user_id)
+                    u.delete()
+                    return Response(serialized._errors, status=400)    
+            else: 
+                return Response(serialized._errors, status=400)
 
 
-        profile = m.UserProfile(
-            account=data['account'],
-            nickname=data['nickname'],
-            birthday='2012-09-04 06:00Z',
-            user_id=3,
-        )
-        profile.save()
-        
-        serializer = s.CreateProfileSerialzer(profile, many=True)
-        return Response(serializer.data)
-        # profile = s.CreateProfileSerialzer(data)
-        return Response(serializer.data)
+            profile = m.UserProfile(
+                account=data['account'],
+                nickname=data['nickname'],
+                birthday='2012-09-04 06:00Z',
+                user_id=3,
+            )
+            profile.save()
+            
+            serializer = s.CreateProfileSerialzer(profile, many=True)
+            return Response(serializer.data)
+            # profile = s.CreateProfileSerialzer(data)
+            return Response(serializer.data)
+        else:
+            return Response({
+                "Result": "Not Allow!"
+            }, 500)
 
 
 
@@ -146,16 +152,22 @@ class MigrateOldAccount(APIView):
         # print(EMAIL_REGEX.match(data['email']))
         # print(m.Account.objects.all().filter(email=data['email']))
         if EMAIL_REGEX.match(data['email']):
-            oldUser = m.Account.objects.filter(email=data['email'])
+            oldUser = m.Account.objects.filter(email=data['email'], password=data['password'])
+            if (oldUser):
+                serializer = s.AccountSerializer(oldUser, many=True)
+                return Response({
+                    "members": serializer.data
+                })
         else:
             oldUser = m.Family.objects.filter(email=data['email'])
-            family_no = oldUser[0].family_no
-            print(family_no)
-            allProfile = m.Profile.objects.filter(family_no=family_no)
-            serializer = s.FamilyProfileSerializer(allProfile, many=True)
-            return Response({
-                "members": serializer.data
-            })
+            if (oldUser):
+                family_no = oldUser[0].family_no
+                # print(family_no)
+                allProfile = m.Profile.objects.filter(family_no=family_no)
+                serializer = s.FamilyProfileSerializer(allProfile, many=True)
+                return Response({
+                    "members": serializer.data
+                })
         # print(oldUser)
         if (oldUser):
             return Response({
@@ -173,3 +185,4 @@ class MigrateOldFamilyMember(APIView):
         # self.check_object_permissions(request, zone)
         serializer = s.UserSerializer(user)
         return Response(serializer.data)
+

@@ -1,6 +1,6 @@
 from rest_framework import serializers as s
 from rest_auth.serializers import UserDetailsSerializer
-
+from rest_auth.models import TokenModel
 from health import models as m
 from django.contrib.auth.models import User
 from rest_framework.validators import UniqueValidator
@@ -27,8 +27,17 @@ class AuthUserSerilaizer(s.ModelSerializer):
 class FamilyProfileSerializer(s.ModelSerializer):
      class Meta:
         model = m.Profile
-        fields = ('profile_id','family_no', 'nickname', 'birth', 'gender', 'height', 'state')
+        fields = ('profile_id','family_no', 'nickname', 'birth', 'gender', 'height', 'state', 'secret', 'secret_email', 'secret_pw')
 
+class AccountSerializer(s.ModelSerializer):
+     class Meta:
+        model = m.Account
+        fields = ('acc_id','app','carrier', 'username', 'email', 'mobile', 'name')
+
+class WeightSerializer(s.ModelSerializer):
+     class Meta:
+        model = m.Weight
+        fields = ('acc_id','app','carrier', 'username', 'email', 'mobile', 'name')
 
 class UserSerializer(UserDetailsSerializer):
     # profileS = ProfileSerializer()
@@ -56,7 +65,17 @@ class UserSerializer(UserDetailsSerializer):
         return instance
 
 
+class TokenSerializer(s.ModelSerializer):
+    """
+    Serializer for Token model.
+    """
+    token = s.SerializerMethodField('get_token_name')
 
+    class Meta:
+        model = TokenModel
+        fields = ('token',)
+    def get_token_name(self, obj):
+        return obj.key
 
 class CreateUserSerializer(s.ModelSerializer):
     password = s.CharField(write_only=True)
