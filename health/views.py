@@ -11,7 +11,7 @@ from django.contrib.auth.models import User
 from django.utils.timezone import now
 from rest_framework import status
 import json
-
+import re
 
 class UserViewList(viewsets.ModelViewSet):
     """
@@ -139,11 +139,24 @@ class ExistingMember(APIView):
 
 class MigrateOldAccount(APIView):
     def post(self, request, pk):
-        return Response(request.data)
+        # return Response(request.data)
         user = get_object_or_404(User, id=pk)
-        # self.check_object_permissions(request, zone)
-        serializer = s.UserSerializer(user)
-        return Response(serializer.data)
+        data = request.data
+        EMAIL_REGEX = re.compile(r"^[A-Za-z0-9\.\+_-]+@[A-Za-z0-9\._-]+\.[a-zA-Z]*$")
+        # print(EMAIL_REGEX.match(data['email']))
+        # print(m.Account.objects.all().filter(email=data['email']))
+        if EMAIL_REGEX.match(data['email']):
+            oldUser = m.Account.objects.filter(email=data['email'])
+        else:
+            oldUser = m.Family.objects.filter(email=data['email'])
+        # print(oldUser)
+        if (oldUser):
+            return Response({
+                "message": "Migrate Successfully!"
+            })
+        return Response({
+            "message": "User infomation provide is incorrect!"
+        }, 404)
 
 
 class MigrateOldFamilyMember(APIView):
