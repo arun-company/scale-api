@@ -211,7 +211,6 @@ class MigrateOldAccount(APIView):
             oldUser = m.Account.objects.filter(email=data['email'], password=data['password'])
             if (oldUser):
                 serializer = s.AccountSerializer(oldUser, many=True)
-                # TODO: weights at weights table and replace the account with the current user. Delete the account from the Chinese account table.
                 return Response({
                     "accountConfirmed": True,
                     "accountType": 1
@@ -267,7 +266,6 @@ class MigrateOldFamilyMember(APIView):
                     "familyMemberConfirmed": True,
                 })
         return Response(request.data)
-        # self.check_object_permissions(request, zone)
         serializer = s.UserSerializer(user)
         return Response(serializer.data)
 
@@ -276,18 +274,30 @@ class Weight(APIView):
         data = request.query_params
         date = data.get('date')
         if date:
-            newDate = datetime.strptime(date, '%Y-%m-%d')
-            newDatePlus = datetime(newDate.year, newDate.month, newDate.day, 23, 59, 59)
-            print(newDatePlus)
-            print(newDate)
-            # weight = m.Weight.objects.filter(measured=newDate)
-            weight = m.Weight.objects.filter(measured__gte=newDate,
-                                    measured__lte=newDatePlus)
-            #                     (measured__month=newDate.month, measured__year=newDate.year)
+            minDate = datetime.strptime(date, '%Y-%m-%d')
+            maxDate = datetime(minDate.year, minDate.month, minDate.day, 23, 59, 59)
+            weight = m.Weight.objects.filter(measured__gte=minDate,
+                                    measured__lte=maxDate, account_id=account_id)
             serializer = s.WeightSerializer(weight, many=True)
-            print(weight)
             return Response(serializer.data)
-
+        elif data.get('month'):
+            date = data.get('month')
+            newDate = datetime.strptime(date, '%Y-%m-%d')
+            minDate = datetime(newDate.year, newDate.month, 1, 0, 0,0)
+            maxDate = datetime(newDate.year, newDate.month+1, 1)
+            weight = m.Weight.objects.filter(measured__gte=minDate,
+                                    measured__lt=maxDate, account_id=account_id)
+            serializer = s.WeightSerializer(weight, many=True)
+            return Response(serializer.data)
+        elif data.get('year'):
+            date = data.get('year')
+            newDate = datetime.strptime(date, '%Y-%m-%d')
+            minDate = datetime(newDate.year, 1, 1, 0, 0,0)
+            maxDate = datetime(newDate.year+1, 1, 1)
+            weight = m.Weight.objects.filter(measured__gte=minDate,
+                                    measured__lt=maxDate, account_id=account_id)
+            serializer = s.WeightSerializer(weight, many=True)
+            return Response(serializer.data)
         profile = get_object_or_404(m.UserProfile, account_id=account_id)
         print(request)
         return Response(data)

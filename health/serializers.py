@@ -39,7 +39,7 @@ class WeightSerializer(s.ModelSerializer):
     measured = s.DateTimeField(format='%Y-%m-%d %H:%M:%S')
     class Meta:
         model = m.Weight
-        fields = ('weight','BMI','BFR', 'BWR', 'MMR', 'BD', 'measured')
+        fields = ('id','weight','BMI','BFR', 'BWR', 'MMR', 'BD', 'measured')
 
 class UserProfileSerializer(s.ModelSerializer):
     profileS = ProfileSerializer()
