@@ -38,14 +38,23 @@ class UserInfo(APIView):
         # self.check_object_permissions(request, zone)
         serializer = s.UPS(profile)
         return Response(serializer.data)
-    def put(self, request, account_id, format=None):
+    def post(self, request, account_id, format=None):
         data = request.data
         profile = get_object_or_404(m.UserProfile, account_id=account_id)
-        print (profile)
+
         if (profile):
             user_id = profile.user_id
-            username = data['username']
-            m.User.objects.filter(id=user_id).update(username=username)
+            # username = data['username']
+            if data.get('username'):
+                m.User.objects.filter(id=user_id).update(username=data['username'])
+            if data.get('birthday'):
+                m.UserProfile.objects.filter(id=profile.id).update(birthday=data.get('birthday'))
+            if data.get('gender'):
+                m.UserProfile.objects.filter(id=profile.id).update(gender=data.get('gender'))
+            if data.get('height'):
+                m.UserProfile.objects.filter(id=profile.id).update(height=data.get('height'))
+            if data.get('state'):
+                m.UserProfile.objects.filter(id=profile.id).update(state=data.get('state'))
             serializer = s.UPS(profile)
             return Response(serializer.data)
 
@@ -55,17 +64,17 @@ class UserInfo(APIView):
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-    def post(self, request, account_id):
-        user = get_object_or_404(User, id=pk)
-        data = request.data
-        serializer = s.CreateUserSerializer(user,data=data)
-        if serializer.is_valid():            
-            serializer.save()
-            return Response(serializer.data)
-        else:
-            return Response({
-                "messesge": "Update Fail!"
-            }, 400)
+    # def post(self, request, account_id):
+    #     user = get_object_or_404(User, id=pk)
+    #     data = request.data
+    #     serializer = s.CreateUserSerializer(user,data=data)
+    #     if serializer.is_valid():            
+    #         serializer.save()
+    #         return Response(serializer.data)
+    #     else:
+    #         return Response({
+    #             "messesge": "Update Fail!"
+    #         }, 400)
     def delete(self, request, account_id):
         # user = get_object_or_404(User, id=pk)
         profile = get_object_or_404(m.UserProfile, account_id=account_id)
