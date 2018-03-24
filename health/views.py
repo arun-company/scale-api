@@ -67,7 +67,6 @@ class UserInfo(APIView):
         }, 400)
 
 class UserRegister(APIView):
-
     def get(self, request):
         users = User.objects.all()
         # self.check_object_permissions(request, zone)
@@ -102,6 +101,15 @@ class UserRegister(APIView):
             return Response({
                 "Result": "Not Allow!"
             }, 500)
+
+class UserSignin(APIView):
+    def post(self, request):
+        
+        serializer = s.TokenSerializer(request.data)
+        serializer.is_valid(raise_exception=True)
+
+        self.login()
+        return self.get_response()
 
 
 

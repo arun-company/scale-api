@@ -97,9 +97,13 @@ class CreateUserSerializer(s.ModelSerializer):
         fields = ('id','first_name', 'last_name', 'email', 'password')
     
     def create(self, validated_data):
+        try:
+            username = validated_data['username']
+        except KeyError:
+            username = validated_data['email']
         user = User(
             email=validated_data['email'],
-            username=validated_data['email']
+            username=username
         )
         user.set_password(validated_data['password'])
         user.save()

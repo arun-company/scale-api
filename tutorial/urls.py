@@ -31,9 +31,9 @@ urlpatterns = [
     url(r'^', include(router.urls)),
     # url(r'^', include('snippets.urls')),
     url(r'^1.0/', include('health.urls')),
-    url(r'^auth/register$', health_view.UserRegister.as_view()),
+
     url(r'^auth/', include('rest_auth.urls')),
-    url(r'^auth/registration/', include('rest_auth.registration.urls'))
+    # url(r'^auth/registration/', include('rest_auth.registration.urls'))
 
     # url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework'))
 ]

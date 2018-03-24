@@ -91,7 +91,7 @@ class Profile(models.Model):
     nickname = models.CharField(max_length=100, blank=True,default=None,null=True)
     birth = models.IntegerField()
     gender = models.SmallIntegerField(default=1)
-    height = models.IntegerField()
+    height = models.FloatField(default=None,null=True)
     image = models.CharField(max_length=255)
     secret = models.CharField(max_length=127, blank=True,default=None,null=True)
     secret_email = models.CharField(max_length=127, blank=True,default=None,null=True)
