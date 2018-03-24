@@ -32,12 +32,13 @@ class UserList(APIView):
 class UserInfo(APIView):
     # permission_classes = (IsAuthenticated,)
 
-    def get(self, request, pk):
-        user = get_object_or_404(User, id=pk)
+    def get(self, request, account_id):
+        # return Response({'account_id': account_id})
+        profile = get_object_or_404(m.UserProfile, account_id=account_id)
         # self.check_object_permissions(request, zone)
-        serializer = s.UserSerializer(user)
+        serializer = s.UPS(profile)
         return Response(serializer.data)
-    def put(self, request, pk, format=None):
+    def put(self, request, account_id, format=None):
         user = get_object_or_404(User,id=pk)
         serializer = s.UpdateUserSerial(user, data=request.data)
         if serializer.is_valid():

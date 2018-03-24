@@ -62,9 +62,10 @@ MIDDLEWARE = [
 SITE_ID = 1 
 REST_SESSION_LOGIN = False
 REST_FRAMEWORK = {
-        'DEFAULT_AUTHENTICATION_CLASSES': (
+    'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework.authentication.TokenAuthentication',
-    )
+    ),
+    'EXCEPTION_HANDLER': 'health.utils.custom_exception_handler'
 }
 ROOT_URLCONF = 'tutorial.urls'
 

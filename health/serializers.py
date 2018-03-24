@@ -3,12 +3,13 @@ from rest_auth.serializers import UserDetailsSerializer
 from rest_auth.models import TokenModel
 from health import models as m
 from django.contrib.auth.models import User
+# from django.db.models import fields
 from rest_framework.validators import UniqueValidator
 
-class UserProfileSerializer(s.ModelSerializer):
-    class Meta:
-        model = m.UserProfile
-        fields = ('account','birthday', 'nickname', 'gender', 'height', 'image', 'state')
+# class UserProfileSerializer(s.ModelSerializer):
+#     class Meta:
+#         model = m.UserProfile
+#         fields = ('account','birthday', 'nickname', 'gender', 'height', 'image', 'state')
 
 class ProfileSerializer(s.ModelSerializer):
     class Meta:
@@ -41,6 +42,26 @@ class WeightSerializer(s.ModelSerializer):
      class Meta:
         model = m.Weight
         fields = ('acc_id','app','carrier', 'username', 'email', 'mobile', 'name')
+
+class UserProfileSerializer(s.ModelSerializer):
+    profileS = ProfileSerializer()
+    class Meta:
+        model = User
+        fields = ('profileS','email','username')
+    
+class UserS(s.ModelSerializer):
+
+    class Meta:
+        model = User
+        fields = ('email', 'username')
+
+class UPS(s.ModelSerializer):
+    user = UserS(required=True)
+    birthday = s.DateTimeField(format='%Y-%m-%d')
+    # birthday = s.DateTimeField(format="yyyy-mm-dd", input_formats=None)  
+    class Meta:
+        model = m.UserProfile
+        fields = ('account_id','user', 'birthday', 'gender', 'height','state')
 
 class UserSerializer(UserDetailsSerializer):
     # profileS = ProfileSerializer()
@@ -111,7 +132,6 @@ class CreateUserSerializer(s.ModelSerializer):
 
 class UpdateUserSerial(s.ModelSerializer):
     email =  s.CharField(max_length=50, validators=[UniqueValidator(queryset=User.objects.all())])
-    
     class Meta:
         model = User
         fields = ('id','first_name', 'last_name', 'email')
