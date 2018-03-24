@@ -154,6 +154,41 @@ class ExistingMember(APIView):
         serializer = s.UserSerializer(user)
         return Response(serializer.data)
 
+class MigrationOldAccounts(APIView):
+    def post(self, request, account_id):
+        profile = get_object_or_404(m.UserProfile, account_id=account_id)
+        data = request.data
+
+        health_email = data.get('health_email')
+        health_password = data.get('health_password')
+        healthplus_email = data.get('healthplus_email')
+        healthplus_password = data.get('healthplus_password')
+        healthAccount = m.Account.objects.filter(email=health_email, password=health_password)
+        health= False
+        if (healthAccount):
+            health= True
+            m.Weight.objects.filter(account_id=healthAccount[0].acc_id).update(account_id=profile.account_id, legacy=0)
+            m.Account.objects.filter(email=health_email, password=health_password).delete()
+        healthplus_member = m.Family.objects.filter(email=healthplus_email, password=healthplus_password)
+        print(healthplus_member)
+        if (healthplus_member):
+            family_no = healthplus_member[0].family_no
+            allProfile = m.Profile.objects.filter(family_no=family_no)
+            serializer = s.FamilyProfileSerializer(allProfile, many=True)
+                #2. Health Plus DB : return the list of members that belong to this account, return True for accountConfirmed, return 2 for accountType.
+            return Response({
+                "accountConfirmed": True,
+                "accountType": 2,
+                "familyMembers": serializer.data
+            })
+        if health:
+            return Response({
+                "accountConfirmed": True,
+                "accountType": 1
+                })    
+        return Response({
+            "accountConfirmed": 'False',
+        }, 204)
 
 class MigrateOldAccount(APIView):
     def post(self, request, account_id):
@@ -161,6 +196,14 @@ class MigrateOldAccount(APIView):
         profile = get_object_or_404(m.UserProfile, account_id=account_id)
         data = request.data
         # return Response(data)
+        health_email = data.get('health_email')
+        health_password = data.get('health_password')
+        healthplus_email = data.get('healthplus_email')
+        healthplus_password = data.get('healthplus_password')
+
+
+
+
         EMAIL_REGEX = re.compile(r"^[A-Za-z0-9\.\+_-]+@[A-Za-z0-9\._-]+\.[a-zA-Z]*$")
         if EMAIL_REGEX.match(data['email']):
             oldUser = m.Account.objects.filter(email=data['email'], password=data['password'])
