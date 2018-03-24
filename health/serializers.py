@@ -3,13 +3,7 @@ from rest_auth.serializers import UserDetailsSerializer
 from rest_auth.models import TokenModel
 from health import models as m
 from django.contrib.auth.models import User
-# from django.db.models import fields
 from rest_framework.validators import UniqueValidator
-
-# class UserProfileSerializer(s.ModelSerializer):
-#     class Meta:
-#         model = m.UserProfile
-#         fields = ('account','birthday', 'nickname', 'gender', 'height', 'image', 'state')
 
 class ProfileSerializer(s.ModelSerializer):
     class Meta:
@@ -18,8 +12,6 @@ class ProfileSerializer(s.ModelSerializer):
 
 
 class AuthUserSerilaizer(s.ModelSerializer):
-#   account = serializers.SlugRelatedField(source = 'health.user_profile')
-#   account = serializers.CharField(source='health.user_profile')
   class Meta:
     model = User
     fields = ('email', 'password' )
@@ -29,7 +21,7 @@ class FamilyProfileSerializer(s.ModelSerializer):
     member_name = s.SerializerMethodField('get_memeber_name')
     class Meta:
         model = m.Profile
-        fields = ('member_name','secret',)
+        fields = ('profile_id','member_name','secret',)
     def get_memeber_name(self, obj):
         return obj.nickname
 
@@ -76,9 +68,6 @@ class UserSerializer(UserDetailsSerializer):
         return user
     def update(self, instance, validated_data):
         profile_data = validated_data.pop('profile')
-        # Unless the application properly enforces that this field is
-        # always set, the follow could raise a `DoesNotExist`, which
-        # would need to be handled.
         profile = instance.profile
 
         instance.username = validated_data.get('username', instance.username)

@@ -39,14 +39,23 @@ class UserInfo(APIView):
         serializer = s.UPS(profile)
         return Response(serializer.data)
     def put(self, request, account_id, format=None):
-        user = get_object_or_404(User,id=pk)
-        serializer = s.UpdateUserSerial(user, data=request.data)
+        data = request.data
+        profile = get_object_or_404(m.UserProfile, account_id=account_id)
+        print (profile)
+        if (profile):
+            user_id = profile.user_id
+            username = data['username']
+            m.User.objects.filter(id=user_id).update(username=username)
+            serializer = s.UPS(profile)
+            return Response(serializer.data)
+
+        serializer = s.UPS(profile, data=request.data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-    def post(self, request, pk):
+    def post(self, request, account_id):
         user = get_object_or_404(User, id=pk)
         data = request.data
         serializer = s.CreateUserSerializer(user,data=data)
@@ -57,14 +66,15 @@ class UserInfo(APIView):
             return Response({
                 "messesge": "Update Fail!"
             }, 400)
-    def delete(self, request, pk):
-        user = get_object_or_404(User, id=pk)
-        if user.delete():
+    def delete(self, request, account_id):
+        # user = get_object_or_404(User, id=pk)
+        profile = get_object_or_404(m.UserProfile, account_id=account_id)
+        if profile.delete():
             return Response({
-                "messesge": "Delete Successfully!"
+                "result": True
             }, 200)
         return Response({
-            "messesge": "Update Fail!"
+            "result": False
         }, 400)
 
 class UserRegister(APIView):
@@ -137,10 +147,11 @@ class ExistingMember(APIView):
 
 
 class MigrateOldAccount(APIView):
-    def post(self, request, pk):
+    def post(self, request, account_id):
         # return Response(request.data)
-        user = get_object_or_404(User, id=pk)
+        profile = get_object_or_404(m.UserProfile, account_id=account_id)
         data = request.data
+        # return Response(data)
         EMAIL_REGEX = re.compile(r"^[A-Za-z0-9\.\+_-]+@[A-Za-z0-9\._-]+\.[a-zA-Z]*$")
         if EMAIL_REGEX.match(data['email']):
             oldUser = m.Account.objects.filter(email=data['email'], password=data['password'])
@@ -175,9 +186,33 @@ class MigrateOldAccount(APIView):
 
 
 class MigrateOldFamilyMember(APIView):
-    def post(self, request, pk):
+    def post(self, request, account_id):
+        profile = get_object_or_404(m.UserProfile, account_id=account_id)
+        data = request.data
+        EMAIL_REGEX = re.compile(r"^[A-Za-z0-9\.\+_-]+@[A-Za-z0-9\._-]+\.[a-zA-Z]*$")
+        if EMAIL_REGEX.match(data['family_email']):
+            oldUser = m.Account.objects.filter(email=data['family_email'], password=data['family_password'])
+            if (oldUser):
+                serializer = s.AccountSerializer(oldUser, many=True)
+                # TODO: weights at weights table and replace the account with the current user. Delete the account from the Chinese account table.
+                return Response({
+                    "accountConfirmed": True,
+                    "accountType": 1
+                })
+        else:
+            oldUser = m.Family.objects.filter(email=data['family_email'], password=data['family_password'])
+            if (oldUser):
+                family_no = oldUser[0].family_no
+                # print(family_no)
+                allProfile = m.Profile.objects.filter(family_no=family_no, nickname= data['member_name'])
+                for pro in allProfile:
+                    m.Weight.objects.filter(account_id=pro.profile_id).update(account_id=profile.account_id, legacy=0)
+                    pro.delete()
+                #2. Health Plus DB : return the list of members that belong to this account, return True for accountConfirmed, return 2 for accountType.
+                return Response({
+                    "familyMemberConfirmed": True,
+                })
         return Response(request.data)
-        user = get_object_or_404(User, id=pk)
         # self.check_object_permissions(request, zone)
         serializer = s.UserSerializer(user)
         return Response(serializer.data)
