@@ -26,14 +26,20 @@ class FamilyProfileSerializer(s.ModelSerializer):
         return obj.nickname
 
 class AccountSerializer(s.ModelSerializer):
-     class Meta:
+    class Meta:
         model = m.Account
         fields = ('acc_id','app','carrier', 'username', 'email', 'mobile', 'name')
 
 class WeightSerializer(s.ModelSerializer):
-     class Meta:
+    BMI = s.FloatField(required=True)
+    BFR = s.FloatField(required=True)
+    BWR = s.FloatField(required=True)
+    MMR = s.FloatField(required=True)
+    BD = s.FloatField(required=True)
+    measured = s.DateTimeField()
+    class Meta:
         model = m.Weight
-        fields = ('acc_id','app','carrier', 'username', 'email', 'mobile', 'name')
+        fields = ('weight','BMI','BFR', 'BWR', 'MMR', 'BD', 'measured')
 
 class UserProfileSerializer(s.ModelSerializer):
     profileS = ProfileSerializer()

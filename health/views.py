@@ -269,3 +269,39 @@ class MigrateOldFamilyMember(APIView):
         serializer = s.UserSerializer(user)
         return Response(serializer.data)
 
+class Weight(APIView):
+    def post(self, request, account_id):
+        data = request.data
+        profile = get_object_or_404(m.UserProfile, account_id=account_id)
+        serial = s.WeightSerializer(data=data)
+        serial.is_valid()
+        weight =  m.Weight.objects.create(
+            account_id=account_id,
+            weight=data.get('weight'),
+            BMI=data.get('BMI'),
+            BFR=data.get('BFR'),
+            BWR=data.get('BWR'),
+            MMR=data.get('MMR'),
+            BD=data.get('BD'),
+            measured=data.get('measured'),
+            legacy=0
+        )
+        if weight:
+            return Response({
+                'result': True
+            })
+        return Response({
+            'result': False
+        })
+    def delete(self, request, account_id):
+        data = request.data
+        profile = get_object_or_404(m.UserProfile, account_id=account_id)
+        
+        if len(m.Weight.objects.filter(id=data.get('id'), account_id=account_id)):
+            m.Weight.objects.filter(id=data.get('id'), account_id=account_id).delete()
+            return Response({
+                'result': True
+            })
+        return Response({
+                'result': False
+            })
