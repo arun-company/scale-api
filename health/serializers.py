@@ -36,7 +36,7 @@ class WeightSerializer(s.ModelSerializer):
     BWR = s.FloatField(required=True)
     MMR = s.FloatField(required=True)
     BD = s.FloatField(required=True)
-    measured = s.DateTimeField()
+    measured = s.DateTimeField(format='%Y-%m-%d %H:%M:%S')
     class Meta:
         model = m.Weight
         fields = ('weight','BMI','BFR', 'BWR', 'MMR', 'BD', 'measured')

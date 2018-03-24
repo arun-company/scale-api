@@ -10,6 +10,8 @@ from health import serializers as s
 from django.contrib.auth.models import User
 from django.utils.timezone import now
 from rest_framework import status
+from datetime import datetime
+# import datetime as dtime
 import json
 import re
 
@@ -270,11 +272,29 @@ class MigrateOldFamilyMember(APIView):
         return Response(serializer.data)
 
 class Weight(APIView):
+    def get(self, request, account_id):
+        data = request.query_params
+        date = data.get('date')
+        if date:
+            newDate = datetime.strptime(date, '%Y-%m-%d')
+            newDatePlus = datetime(newDate.year, newDate.month, newDate.day, 23, 59, 59)
+            print(newDatePlus)
+            print(newDate)
+            # weight = m.Weight.objects.filter(measured=newDate)
+            weight = m.Weight.objects.filter(measured__gte=newDate,
+                                    measured__lte=newDatePlus)
+            #                     (measured__month=newDate.month, measured__year=newDate.year)
+            serializer = s.WeightSerializer(weight, many=True)
+            print(weight)
+            return Response(serializer.data)
+
+        profile = get_object_or_404(m.UserProfile, account_id=account_id)
+        print(request)
+        return Response(data)
+
     def post(self, request, account_id):
         data = request.data
         profile = get_object_or_404(m.UserProfile, account_id=account_id)
-        serial = s.WeightSerializer(data=data)
-        serial.is_valid()
         weight =  m.Weight.objects.create(
             account_id=account_id,
             weight=data.get('weight'),
