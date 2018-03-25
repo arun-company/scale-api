@@ -128,12 +128,11 @@ class UserRegister(APIView):
 
 class UserSignin(APIView):
     def post(self, request):
-        
+        return Response({
+            "Result": "Not Allow!"
+        }, 500)
         serializer = s.TokenSerializer(request.data)
         serializer.is_valid(raise_exception=True)
-
-        self.login()
-        return self.get_response()
 
 
 
