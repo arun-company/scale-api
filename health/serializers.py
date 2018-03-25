@@ -82,12 +82,18 @@ class UserS(s.ModelSerializer):
         fields = ('email', 'username')
 
 class UPS(s.ModelSerializer):
-    user = UserS(required=True)
     birthday = s.DateTimeField(format='%Y-%m-%d')
+    email = s.SerializerMethodField('get_email_name')
+    username = s.SerializerMethodField('get_user_name')
     # birthday = s.DateTimeField(format="yyyy-mm-dd", input_formats=None)  
     class Meta:
         model = m.UserProfile
-        fields = ('account_id','user', 'birthday', 'gender', 'height','state')
+        fields = ('account_id','email','username', 'birthday', 'gender', 'height','state')
+
+    def get_email_name(self, obj):
+        return obj.user.email
+    def get_user_name(self, obj):
+        return obj.name
 
 class UserSerializer(UserDetailsSerializer):
     # profileS = ProfileSerializer()
@@ -110,6 +116,7 @@ class UserSerializer(UserDetailsSerializer):
         profile.save()
 
         return instance
+
 
 
 class TokenSerializer(s.ModelSerializer):

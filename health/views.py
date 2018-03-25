@@ -50,7 +50,7 @@ class UserInfo(APIView):
             user_id = profile.user_id
             # username = data['username']
             if data.get('username'):
-                m.User.objects.filter(id=user_id).update(username=data['username'])
+                m.UserProfile.objects.filter(id=profile.id).update(name=data['username'])
             if data.get('birthday'):
                 m.UserProfile.objects.filter(id=profile.id).update(birthday=data.get('birthday'))
             if data.get('gender'):
@@ -67,18 +67,6 @@ class UserInfo(APIView):
             serializer.save()
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-    # def post(self, request, account_id):
-    #     user = get_object_or_404(User, id=pk)
-    #     data = request.data
-    #     serializer = s.CreateUserSerializer(user,data=data)
-    #     if serializer.is_valid():            
-    #         serializer.save()
-    #         return Response(serializer.data)
-    #     else:
-    #         return Response({
-    #             "messesge": "Update Fail!"
-    #         }, 400)
     def delete(self, request, account_id):
         # user = get_object_or_404(User, id=pk)
         profile = get_object_or_404(m.UserProfile, account_id=account_id)
@@ -99,18 +87,18 @@ class UserRegister(APIView):
     def post(self, request):
         if (request.META.get('HTTP_REQUESTOR_ID') == "23810e1b-21c4-46fd-9e8e-e22156dbeb39"):
             data = request.data
-            print(data)
             serialized = s.CreateUserSerializer(data=data)
             if serialized.is_valid():
                 serialized.save()
                 new_user = dict(serialized.data)
                 user_id = new_user.get('id')
-                print(user_id)
                 if user_id:
-                    profile = m.UserProfile(
-                        birthday="2010-10-10 01:01",
+                    profile = m.UserProfile (
                         user_id=user_id
                     )
+                    profile.birthday = data.get('birthday')
+                    profile.gender = data.get('gender')
+                    profile.height = data.get('height')
                     profile.save()
                     return Response({
                                 "account_id": profile.account_id
