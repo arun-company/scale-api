@@ -118,7 +118,7 @@ class Weight(models.Model):
     class Meta:
         db_table = 'weights'
         ordering = ('added',)
-class UnknownWeight(models.Model):
+class WeightUnknown(models.Model):
     account_id = models.CharField(max_length=100, blank=True,default=None,null=True)
     weight = models.FloatField(blank=True,default=None,null=True)
     BMI = models.FloatField(blank=True,default=None,null=True)
@@ -132,7 +132,7 @@ class UnknownWeight(models.Model):
     device_id = models.CharField(max_length=12, blank=True,default=None,null=True)
     device_sn = models.CharField(max_length=16, blank=True,default=None,null=True)
     class Meta:
-        db_table = 'unknowweights'
+        db_table = 'weights_unknown'
         ordering = ('added', 'measured')
 
 # Health APP

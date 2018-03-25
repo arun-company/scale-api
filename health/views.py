@@ -392,3 +392,52 @@ class AverageWeight(APIView):
         profile = get_object_or_404(m.UserProfile, account_id=account_id)
         print(request)
         return Response(data)
+
+
+class WeightUnknown(APIView):
+    def get(self, request, account_id):
+        data = request.query_params
+        device_id = data.get('device_id')
+        print(device_id)
+        if device_id:
+            weight_unknow = m.WeightUnknown.objects.filter(device_id=device_id)
+            serializer = s.WeightUnknownSerializer(weight_unknow, many=True)
+            return Response(serializer.data)
+        return Response({
+            "result": "missing device_id"
+        })
+
+    def post(self, request, account_id):
+        data = request.data
+        profile = get_object_or_404(m.UserProfile, account_id=account_id)
+        weight =  m.WeightUnknown.objects.create(
+            account_id=account_id,
+            device_id=data.get('device_id'),
+            weight=data.get('weight'),
+            BMI=data.get('BMI'),
+            BFR=data.get('BFR'),
+            BWR=data.get('BWR'),
+            MMR=data.get('MMR'),
+            BD=data.get('BD'),
+            measured=data.get('measured'),
+            legacy=0
+        )
+        if weight:
+            return Response({
+                'result': True
+            })
+        return Response({
+            'result': False
+        })
+    def delete(self, request, account_id):
+        data = request.query_params
+        profile = get_object_or_404(m.UserProfile, account_id=account_id)
+        wId = data.get('id')
+        if len(m.WeightUnknown.objects.filter(id=wId)):
+            m.WeightUnknown.objects.filter(id=wId).delete()
+            return Response({
+                'result': True
+            })
+        return Response({
+                'result': False
+            })

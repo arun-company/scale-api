@@ -64,6 +64,11 @@ class WeightSerializer(s.ModelSerializer):
         model = m.Weight
         fields = ('id','weight','BMI','BFR', 'BWR', 'MMR', 'BD', 'measured')
 
+class WeightUnknownSerializer(s.ModelSerializer):
+    class Meta:
+        model = m.WeightUnknown
+        fields = ('id','weight','BMI','BFR', 'BWR', 'MMR', 'BD', 'measured', 'device_id')
+
 class UserProfileSerializer(s.ModelSerializer):
     profileS = ProfileSerializer()
     class Meta:
