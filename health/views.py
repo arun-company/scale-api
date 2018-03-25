@@ -42,7 +42,7 @@ class UserInfo(APIView):
         # self.check_object_permissions(request, zone)
         serializer = s.UPS(profile)
         return Response(serializer.data)
-    def post(self, request, account_id, format=None):
+    def patch(self, request, account_id, format=None):
         data = request.data
         profile = get_object_or_404(m.UserProfile, account_id=account_id)
 
@@ -59,8 +59,10 @@ class UserInfo(APIView):
                 m.UserProfile.objects.filter(id=profile.id).update(height=data.get('height'))
             if data.get('state'):
                 m.UserProfile.objects.filter(id=profile.id).update(state=data.get('state'))
-            serializer = s.UPS(profile)
-            return Response(serializer.data)
+            
+            return Response({
+                "result": True
+            })
 
         serializer = s.UPS(profile, data=request.data)
         if serializer.is_valid():
@@ -77,6 +79,7 @@ class UserInfo(APIView):
         return Response({
             "result": False
         }, 400)
+
 
 class UserRegister(APIView):
     def get(self, request):
@@ -163,12 +166,10 @@ class MigrationOldAccounts(APIView):
             m.Weight.objects.filter(account_id=healthAccount[0].acc_id).update(account_id=profile.account_id, legacy=0)
             m.Account.objects.filter(email=health_email, password=health_password).delete()
         healthplus_member = m.Family.objects.filter(email=healthplus_email, password=healthplus_password)
-        print(healthplus_member)
         if (healthplus_member):
             family_no = healthplus_member[0].family_no
             allProfile = m.Profile.objects.filter(family_no=family_no)
             serializer = s.FamilyProfileSerializer(allProfile, many=True)
-                #2. Health Plus DB : return the list of members that belong to this account, return True for accountConfirmed, return 2 for accountType.
             return Response({
                 "accountConfirmed": True,
                 "accountType": 2,
@@ -177,7 +178,8 @@ class MigrationOldAccounts(APIView):
         if health:
             return Response({
                 "accountConfirmed": True,
-                "accountType": 1
+                "accountType": 1,
+                "familyMembers": {}
                 })    
         return Response({
             "accountConfirmed": 'False',
@@ -194,9 +196,6 @@ class MigrateOldAccount(APIView):
         health_password = data.get('health_password')
         healthplus_email = data.get('healthplus_email')
         healthplus_password = data.get('healthplus_password')
-
-
-
 
         EMAIL_REGEX = re.compile(r"^[A-Za-z0-9\.\+_-]+@[A-Za-z0-9\._-]+\.[a-zA-Z]*$")
         if EMAIL_REGEX.match(data['email']):
@@ -240,7 +239,6 @@ class MigrateOldFamilyMember(APIView):
             oldUser = m.Account.objects.filter(email=data['family_email'], password=data['family_password'])
             if (oldUser):
                 serializer = s.AccountSerializer(oldUser, many=True)
-                # TODO: weights at weights table and replace the account with the current user. Delete the account from the Chinese account table.
                 return Response({
                     "accountConfirmed": True,
                     "accountType": 1
@@ -258,9 +256,9 @@ class MigrateOldFamilyMember(APIView):
                 return Response({
                     "familyMemberConfirmed": True,
                 })
-        return Response(request.data)
-        serializer = s.UserSerializer(user)
-        return Response(serializer.data)
+        return Response({
+                    "familyMemberConfirmed": False,
+                }, 202)
 
 class Weight(APIView):
     permission_classes = (IsAuthenticated,)
@@ -296,7 +294,7 @@ class Weight(APIView):
         print(request)
         return Response(data)
 
-    def post(self, request, account_id):
+    def put(self, request, account_id):
         data = request.data
         profile = get_object_or_404(m.UserProfile, account_id=account_id)
         weight =  m.Weight.objects.create(
@@ -348,7 +346,7 @@ class AverageWeight(APIView):
             newDate = datetime.strptime(date, '%Y-%m-%d')
             minDate = datetime(newDate.year, newDate.month, 1, 0, 0,0)
             maxDate = datetime(newDate.year, newDate.month+1, 1)
-            weight = m.Weight.objects.filter(measured__gte=minDate, measured__lt=maxDate).extra({'filtertime' : "date(measured)"}).values("filtertime").annotate(
+            weight = m.Weight.objects.filter(measured__gte=minDate, measured__lt=maxDate, account_id=account_id).extra({'filtertime' : "date(measured)"}).values("filtertime").annotate(
                 total=Count('id'),
                 day=Max('measured'), 
                 averageWeight=Avg('weight'), 
@@ -367,7 +365,7 @@ class AverageWeight(APIView):
             newDate = datetime.strptime(date, '%Y-%m-%d')
             minDate = datetime(newDate.year, 1, 1, 0, 0,0)
             maxDate = datetime(newDate.year+1, 1, 1)
-            weight = m.Weight.objects.filter(measured__gte=minDate, measured__lt=maxDate).extra({'filtertime' : "MONTH(DATE(measured))"}).values("filtertime").annotate(
+            weight = m.Weight.objects.filter(measured__gte=minDate, measured__lt=maxDate, account_id=account_id).extra({'filtertime' : "MONTH(DATE(measured))"}).values("filtertime").annotate(
                 total=Count('id'),
                 month=Max('measured'), 
                 averageWeight=Avg('weight'), 
@@ -424,7 +422,7 @@ class WeightUnknown(APIView):
             'result': False
         })
     def delete(self, request, account_id):
-        data = request.query_params
+        data = request.data
         profile = get_object_or_404(m.UserProfile, account_id=account_id)
         wId = data.get('id')
         if len(m.WeightUnknown.objects.filter(id=wId)):

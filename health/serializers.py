@@ -54,11 +54,11 @@ class AverageWeightMonthlySerializer(s.Serializer):
     averageBD=s.FloatField()
 
 class WeightSerializer(s.ModelSerializer):
-    BMI = s.FloatField(required=True)
-    BFR = s.FloatField(required=True)
-    BWR = s.FloatField(required=True)
-    MMR = s.FloatField(required=True)
-    BD = s.FloatField(required=True)
+    # BMI = s.FloatField(required=True)
+    # BFR = s.FloatField(required=True)
+    # BWR = s.FloatField(required=True)
+    # MMR = s.FloatField(required=True)
+    # BD = s.FloatField(required=True)
     measured = s.DateTimeField(format='%Y-%m-%d %H:%M:%S')
     class Meta:
         model = m.Weight
