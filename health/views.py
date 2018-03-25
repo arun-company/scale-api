@@ -11,6 +11,8 @@ from django.contrib.auth.models import User
 from django.utils.timezone import now
 from rest_framework import status
 from datetime import datetime
+from django.db.models import Count
+
 # import datetime as dtime
 import json
 import re
@@ -335,3 +337,40 @@ class Weight(APIView):
         return Response({
                 'result': False
             })
+
+
+class AverageWeight(APIView):
+    def get(self, request, account_id):
+        data = request.query_params
+        date = data.get('date')
+        if date:
+            minDate = datetime.strptime(date, '%Y-%m-%d')
+            maxDate = datetime(minDate.year, minDate.month, minDate.day, 23, 59, 59)
+            weight = m.Weight.objects.filter(measured__gte=minDate,
+                                    measured__lte=maxDate, account_id=account_id)
+            serializer = s.WeightSerializer(weight, many=True)
+            return Response(serializer.data)
+        elif data.get('month'):
+            date = data.get('month')
+            newDate = datetime.strptime(date, '%Y-%m-%d')
+            minDate = datetime(newDate.year, newDate.month, 1, 0, 0,0)
+            maxDate = datetime(newDate.year, newDate.month+1, 1)
+            weight = m.Weight.objects.filter(measured__gte=minDate,
+                                    measured__lt=maxDate).extra({'measured-item' : "date(measured)"}).values("measured-item").annotate(created_count=Count('id'))
+
+            print(weight)
+
+            # serializer = s.WeightSerializer(weight, many=True)
+            # return Response(serializer.data)
+        elif data.get('year'):
+            date = data.get('year')
+            newDate = datetime.strptime(date, '%Y-%m-%d')
+            minDate = datetime(newDate.year, 1, 1, 0, 0,0)
+            maxDate = datetime(newDate.year+1, 1, 1)
+            weight = m.Weight.objects.filter(measured__gte=minDate,
+                                    measured__lt=maxDate, account_id=account_id)
+            serializer = s.WeightSerializer(weight, many=True)
+            return Response(serializer.data)
+        profile = get_object_or_404(m.UserProfile, account_id=account_id)
+        print(request)
+        return Response(data)

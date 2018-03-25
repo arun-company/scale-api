@@ -10,7 +10,7 @@ urlpatterns = [
     url(r'^user/(?P<account_id>[0-9a-zA-z-]*)/migrateOldAccount$', views.MigrationOldAccounts.as_view()),
     url(r'^user/(?P<account_id>[0-9a-f-]*)/migrateOldFamilyMember$', views.MigrateOldFamilyMember.as_view()),
     url(r'^user/(?P<account_id>[0-9a-f-]*)/weight$', views.Weight.as_view()),
-
+    url(r'^user/(?P<account_id>[0-9a-f-]*)/averageweight$', views.AverageWeight.as_view()),
 
     url(r'^auth/registration$', views.UserRegister.as_view()),
     url(r'^auth/signin$', views.UserRegister.as_view()),

@@ -118,6 +118,23 @@ class Weight(models.Model):
     class Meta:
         db_table = 'weights'
         ordering = ('added',)
+class UnknownWeight(models.Model):
+    account_id = models.CharField(max_length=100, blank=True,default=None,null=True)
+    weight = models.FloatField(blank=True,default=None,null=True)
+    BMI = models.FloatField(blank=True,default=None,null=True)
+    BFR = models.FloatField(blank=True,default=None,null=True)
+    BWR = models.FloatField(blank=True,default=None,null=True)
+    MMR = models.FloatField(blank=True,default=None,null=True)
+    BD = models.FloatField(blank=True,default=None,null=True)
+    legacy = models.SmallIntegerField()
+    measured = models.DateTimeField(auto_now_add=True)
+    added = models.DateTimeField(auto_now_add=True)
+    device_id = models.CharField(max_length=12, blank=True,default=None,null=True)
+    device_sn = models.CharField(max_length=16, blank=True,default=None,null=True)
+    class Meta:
+        db_table = 'unknowweights'
+        ordering = ('added', 'measured')
+
 
 # Health APP
 class WeightRecord(models.Model):
