@@ -34,7 +34,7 @@ class UserList(APIView):
         return Response(serializer.data)
 
 class UserInfo(APIView):
-    # permission_classes = (IsAuthenticated,)
+    permission_classes = (IsAuthenticated,)
 
     def get(self, request, account_id):
         # return Response({'account_id': account_id})
@@ -159,6 +159,7 @@ class ExistingMember(APIView):
         return Response(serializer.data)
 
 class MigrationOldAccounts(APIView):
+    permission_classes = (IsAuthenticated,)
     def post(self, request, account_id):
         profile = get_object_or_404(m.UserProfile, account_id=account_id)
         data = request.data
@@ -195,6 +196,7 @@ class MigrationOldAccounts(APIView):
         }, 204)
 
 class MigrateOldAccount(APIView):
+    permission_classes = (IsAuthenticated,)
     def post(self, request, account_id):
         # return Response(request.data)
         profile = get_object_or_404(m.UserProfile, account_id=account_id)
@@ -241,6 +243,7 @@ class MigrateOldAccount(APIView):
 
 
 class MigrateOldFamilyMember(APIView):
+    permission_classes = (IsAuthenticated,)
     def post(self, request, account_id):
         profile = get_object_or_404(m.UserProfile, account_id=account_id)
         data = request.data
@@ -272,6 +275,7 @@ class MigrateOldFamilyMember(APIView):
         return Response(serializer.data)
 
 class Weight(APIView):
+    permission_classes = (IsAuthenticated,)
     def get(self, request, account_id):
         data = request.query_params
         date = data.get('date')
@@ -340,6 +344,7 @@ class Weight(APIView):
 
 
 class AverageWeight(APIView):
+    permission_classes = (IsAuthenticated,)
     def get(self, request, account_id):
         data = request.query_params
         date = data.get('date')
@@ -395,6 +400,7 @@ class AverageWeight(APIView):
 
 
 class WeightUnknown(APIView):
+    permission_classes = (IsAuthenticated,)
     def get(self, request, account_id):
         data = request.query_params
         device_id = data.get('device_id')
