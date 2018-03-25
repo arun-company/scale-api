@@ -85,11 +85,22 @@ TEMPLATES = [
     },
 ]
 
+AUTHENTICATION_BACKENDS = (
+    # Needed to login by username in Django admin, regardless of `allauth`
+    "django.contrib.auth.backends.ModelBackend",
+
+    # `allauth` specific authentication methods, such as login by e-mail
+    "allauth.account.auth_backends.AuthenticationBackend",
+)
+
 REST_AUTH_SERIALIZERS = {
-    'USER_DETAILS_SERIALIZER': 'health.serializers.UserSerializer',
+    # 'USER_DETAILS_SERIALIZER': 'health.serializers.UserSerializer',
     'TOKEN_SERIALIZER': 'health.serializers.TokenSerializer',
 }
-AUTH_PROFILE_MODULE = 'health.userprofile'
+ACCOUNT_AUTHENTICATION_METHOD = 'email'
+ACCOUNT_EMAIL_REQUIRED = True
+ACCOUNT_USERNAME_REQUIRED = False
+# AUTH_PROFILE_MODULE = 'health.userprofile'
 
 WSGI_APPLICATION = 'tutorial.wsgi.application'
 

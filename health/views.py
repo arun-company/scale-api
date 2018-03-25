@@ -97,8 +97,9 @@ class UserRegister(APIView):
                         user_id=user_id
                     )
                     profile.birthday = data.get('birthday')
-                    profile.gender = data.get('gender')
-                    profile.height = data.get('height')
+                    profile.gender = data.get('gender') if data.get('gender') else 0
+                    profile.height = data.get('height') if data.get('height') else 0
+                    profile.name = data.get('username')
                     profile.save()
                     return Response({
                                 "account_id": profile.account_id
