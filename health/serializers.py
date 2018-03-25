@@ -5,6 +5,7 @@ from health import models as m
 from django.contrib.auth.models import User
 from rest_framework.validators import UniqueValidator
 
+
 class ProfileSerializer(s.ModelSerializer):
     class Meta:
         model = m.UserProfile
@@ -29,6 +30,28 @@ class AccountSerializer(s.ModelSerializer):
     class Meta:
         model = m.Account
         fields = ('acc_id','app','carrier', 'username', 'email', 'mobile', 'name')
+
+class AverageWeightSerializer(s.Serializer):
+    day = s.DateTimeField(format='%Y-%m-%d')
+    averageWeight=s.FloatField()
+    minWeight=s.FloatField()
+    maxWeight=s.FloatField()
+    averageBMI=s.FloatField()
+    averageBFR=s.FloatField()
+    averageBWR=s.FloatField()
+    averageMMR=s.FloatField()
+    averageBD=s.FloatField()
+
+class AverageWeightMonthlySerializer(s.Serializer):
+    month = s.DateTimeField(format='%Y-%m')
+    averageWeight=s.FloatField()
+    minWeight=s.FloatField()
+    maxWeight=s.FloatField()
+    averageBMI=s.FloatField()
+    averageBFR=s.FloatField()
+    averageBWR=s.FloatField()
+    averageMMR=s.FloatField()
+    averageBD=s.FloatField()
 
 class WeightSerializer(s.ModelSerializer):
     BMI = s.FloatField(required=True)

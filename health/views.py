@@ -11,7 +11,7 @@ from django.contrib.auth.models import User
 from django.utils.timezone import now
 from rest_framework import status
 from datetime import datetime
-from django.db.models import Count
+from django.db.models import Count, Avg, Max, Min
 
 # import datetime as dtime
 import json
@@ -355,21 +355,39 @@ class AverageWeight(APIView):
             newDate = datetime.strptime(date, '%Y-%m-%d')
             minDate = datetime(newDate.year, newDate.month, 1, 0, 0,0)
             maxDate = datetime(newDate.year, newDate.month+1, 1)
-            weight = m.Weight.objects.filter(measured__gte=minDate,
-                                    measured__lt=maxDate).extra({'measured-item' : "date(measured)"}).values("measured-item").annotate(created_count=Count('id'))
-
-            print(weight)
-
-            # serializer = s.WeightSerializer(weight, many=True)
-            # return Response(serializer.data)
+            weight = m.Weight.objects.filter(measured__gte=minDate, measured__lt=maxDate).extra({'filtertime' : "date(measured)"}).values("filtertime").annotate(
+                total=Count('id'),
+                day=Max('measured'), 
+                averageWeight=Avg('weight'), 
+                minWeight=Min('weight'),
+                maxWeight=Max('weight'),
+                averageBMI=Avg('BMI'),
+                averageBFR=Avg('BFR'),
+                averageBWR=Avg('BWR'),
+                averageMMR=Avg('MMR'),
+                averageBD=Avg('BD'),
+                ).order_by('day')
+            serializer = s.AverageWeightSerializer(weight, many=True)
+            return Response(serializer.data)
         elif data.get('year'):
             date = data.get('year')
             newDate = datetime.strptime(date, '%Y-%m-%d')
             minDate = datetime(newDate.year, 1, 1, 0, 0,0)
             maxDate = datetime(newDate.year+1, 1, 1)
-            weight = m.Weight.objects.filter(measured__gte=minDate,
-                                    measured__lt=maxDate, account_id=account_id)
-            serializer = s.WeightSerializer(weight, many=True)
+            weight = m.Weight.objects.filter(measured__gte=minDate, measured__lt=maxDate).extra({'filtertime' : "MONTH(DATE(measured))"}).values("filtertime").annotate(
+                total=Count('id'),
+                month=Max('measured'), 
+                averageWeight=Avg('weight'), 
+                minWeight=Min('weight'),
+                maxWeight=Max('weight'),
+                averageBMI=Avg('BMI'),
+                averageBFR=Avg('BFR'),
+                averageBWR=Avg('BWR'),
+                averageMMR=Avg('MMR'),
+                averageBD=Avg('BD'),
+                ).order_by('month')
+            print(weight)
+            serializer = s.AverageWeightMonthlySerializer(weight, many=True)
             return Response(serializer.data)
         profile = get_object_or_404(m.UserProfile, account_id=account_id)
         print(request)
