@@ -124,12 +124,17 @@ class TokenSerializer(s.ModelSerializer):
     Serializer for Token model.
     """
     token = s.SerializerMethodField('get_token_name')
-
+    user = s.SerializerMethodField('get_user_profile')
     class Meta:
         model = TokenModel
-        fields = ('token',)
+        fields = ('token','user')
     def get_token_name(self, obj):
         return obj.key
+    def get_user_name(self, obj):
+        return obj.user.username
+    def get_user_profile(self, obj):
+        profile = m.UserProfile.objects.filter(user_id=obj.user.id)
+        return {'email': obj.user.email ,'account_id': profile[0].account_id, 'username': profile[0].name}
 
 class CreateUserSerializer(s.ModelSerializer):
     password = s.CharField(write_only=True)
