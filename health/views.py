@@ -82,42 +82,32 @@ class UserInfo(APIView):
 
 
 class UserRegister(APIView):
-    def get(self, request):
-        users = User.objects.all()
-        # self.check_object_permissions(request, zone)
-        serializer = s.AuthUserSerilaizer(users, many=True)
-        return Response(serializer.data)
     def post(self, request):
-        if (request.META.get('HTTP_REQUESTOR_ID') == "23810e1b-21c4-46fd-9e8e-e22156dbeb39"):
-            data = request.data
-            serialized = s.CreateUserSerializer(data=data)
-            if serialized.is_valid():
-                serialized.save()
-                new_user = dict(serialized.data)
-                user_id = new_user.get('id')
-                if user_id:
-                    profile = m.UserProfile (
-                        user_id=user_id
-                    )
-                    profile.birthday = data.get('birthday')
-                    profile.gender = data.get('gender') if data.get('gender') else 0
-                    profile.height = data.get('height') if data.get('height') else 0
-                    profile.name = data.get('username')
-                    profile.save()
-                    return Response({
-                                "account_id": profile.account_id
-                            }, status=200)
-                else :
-                    u = User.objects.get(id = user_id)
-                    u.delete()
-                    return Response(serialized._errors, status=400)    
-            else: 
-                return Response(serialized._errors, status=400)
-        else:
-            return Response({
-                "Result": "Not Allow!"
-            }, 500)
-
+        data = request.data
+        serialized = s.CreateUserSerializer(data=data)
+        if serialized.is_valid():
+            serialized.save()
+            new_user = dict(serialized.data)
+            user_id = new_user.get('id')
+            if user_id:
+                profile = m.UserProfile (
+                    user_id=user_id
+                )
+                profile.birthday = data.get('birthday')
+                profile.gender = data.get('gender') if data.get('gender') else 0
+                profile.height = data.get('height') if data.get('height') else 0
+                profile.name = data.get('username')
+                profile.save()
+                return Response({
+                            "account_id": profile.account_id
+                        }, status=200)
+            else :
+                u = User.objects.get(id = user_id)
+                u.delete()
+                return Response(serialized._errors, status=400)    
+        else: 
+            return Response(serialized._errors, status=400)
+        
 class UserSignin(APIView):
     def post(self, request):
         return Response({

@@ -65,7 +65,7 @@ REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework.authentication.TokenAuthentication',
     ),
-    # 'EXCEPTION_HANDLER': 'health.utils.custom_exception_handler'
+    'EXCEPTION_HANDLER': 'health.utils.custom_exception_handler'
 }
 ROOT_URLCONF = 'tutorial.urls'
 
