@@ -1,5 +1,6 @@
 from rest_framework import viewsets
 from django.shortcuts import get_object_or_404
+from django.core.exceptions import ValidationError
 from django.utils.timezone import now
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -44,7 +45,13 @@ class UserInfo(APIView):
         return Response(serializer.data)
     def patch(self, request, account_id, format=None):
         data = request.data
-        profile = get_object_or_404(m.UserProfile, account_id=account_id)
+        try:
+            profile = get_object_or_404(m.UserProfile, account_id=account_id)
+        except ValidationError:
+            return Response({
+                "result": 'False',
+                "message": 'Account id incorrect.'
+            }, 202)
 
         if (profile):
             user_id = profile.user_id
@@ -71,7 +78,13 @@ class UserInfo(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     def delete(self, request, account_id):
         # user = get_object_or_404(User, id=pk)
-        profile = get_object_or_404(m.UserProfile, account_id=account_id)
+        try:
+            profile = get_object_or_404(m.UserProfile, account_id=account_id)
+        except ValidationError:
+            return Response({
+                "result": 'False',
+                "message": 'Account id incorrect.'
+            }, 202)
         if profile.delete():
             return Response({
                 "result": True
@@ -85,13 +98,25 @@ class UserResetPassword(APIView):
 
     def get(self, request, account_id):
         # return Response({'account_id': account_id})
-        profile = get_object_or_404(m.UserProfile, account_id=account_id)
+        try:
+            profile = get_object_or_404(m.UserProfile, account_id=account_id)
+        except ValidationError:
+            return Response({
+                "result": 'False',
+                "message": 'Account id incorrect.'
+            }, 202)
         # self.check_object_permissions(request, zone)
         serializer = s.UPS(profile)
         return Response(serializer.data)
     def patch(self, request, account_id, format=None):
         data = request.data
-        profile = get_object_or_404(m.UserProfile, account_id=account_id)
+        try:
+            profile = get_object_or_404(m.UserProfile, account_id=account_id)
+        except ValidationError:
+            return Response({
+                "result": 'False',
+                "message": 'Account id incorrect.'
+            }, 202)
 
         if (profile):
             user_id = profile.user_id
@@ -109,7 +134,13 @@ class UserResetPassword(APIView):
 
     def delete(self, request, account_id):
         # user = get_object_or_404(User, id=pk)
-        profile = get_object_or_404(m.UserProfile, account_id=account_id)
+        try:
+            profile = get_object_or_404(m.UserProfile, account_id=account_id)
+        except ValidationError:
+            return Response({
+                "result": 'False',
+                "message": 'Account id incorrect.'
+            }, 202)
         if profile.delete():
             return Response({
                 "result": True
@@ -180,7 +211,14 @@ class ExistingMember(APIView):
 class MigrationOldAccounts(APIView):
     permission_classes = (IsAuthenticated,)
     def post(self, request, account_id):
-        profile = get_object_or_404(m.UserProfile, account_id=account_id)
+        try:
+            profile = get_object_or_404(m.UserProfile, account_id=account_id)
+        except ValidationError:
+            return Response({
+                "accountConfirmed": 'False',
+                "message": 'Account id incorrect.'
+            }, 202)
+        
         data = request.data
 
         health_email = data.get('health_email')
@@ -211,13 +249,19 @@ class MigrationOldAccounts(APIView):
                 })    
         return Response({
             "accountConfirmed": 'False',
-        }, 204)
+        }, 202)
 
 class MigrateOldAccount(APIView):
     permission_classes = (IsAuthenticated,)
     def post(self, request, account_id):
         # return Response(request.data)
-        profile = get_object_or_404(m.UserProfile, account_id=account_id)
+        try:
+            profile = get_object_or_404(m.UserProfile, account_id=account_id)
+        except ValidationError:
+            return Response({
+                "accountConfirmed": 'False',
+                "message": 'Account id incorrect.'
+            }, 202)
         data = request.data
         # return Response(data)
         health_email = data.get('health_email')
@@ -260,7 +304,13 @@ class MigrateOldAccount(APIView):
 class MigrateOldFamilyMember(APIView):
     permission_classes = (IsAuthenticated,)
     def post(self, request, account_id):
-        profile = get_object_or_404(m.UserProfile, account_id=account_id)
+        try:
+            profile = get_object_or_404(m.UserProfile, account_id=account_id)
+        except ValidationError:
+            return Response({
+                "result": 'False',
+                "message": 'Account id incorrect.'
+            }, 202)
         data = request.data
         EMAIL_REGEX = re.compile(r"^[A-Za-z0-9\.\+_-]+@[A-Za-z0-9\._-]+\.[a-zA-Z]*$")
         if EMAIL_REGEX.match(data['family_email']):
@@ -324,7 +374,13 @@ class Weight(APIView):
 
     def put(self, request, account_id):
         data = request.data
-        profile = get_object_or_404(m.UserProfile, account_id=account_id)
+        try:
+            profile = get_object_or_404(m.UserProfile, account_id=account_id)
+        except ValidationError:
+            return Response({
+                "result": 'False',
+                "message": 'Account id incorrect.'
+            }, 202)
         weight =  m.Weight.objects.create(
             account_id=account_id,
             weight=data.get('weight'),
@@ -345,7 +401,13 @@ class Weight(APIView):
         })
     def delete(self, request, account_id):
         data = request.data
-        profile = get_object_or_404(m.UserProfile, account_id=account_id)
+        try:
+            profile = get_object_or_404(m.UserProfile, account_id=account_id)
+        except ValidationError:
+            return Response({
+                "result": 'False',
+                "message": 'Account id incorrect.'
+            }, 202)
         
         if len(m.Weight.objects.filter(id=data.get('id'), account_id=account_id)):
             m.Weight.objects.filter(id=data.get('id'), account_id=account_id).delete()
@@ -408,8 +470,6 @@ class AverageWeight(APIView):
             print(weight)
             serializer = s.AverageWeightMonthlySerializer(weight, many=True)
             return Response(serializer.data)
-        profile = get_object_or_404(m.UserProfile, account_id=account_id)
-        print(request)
         return Response(data)
 
 
@@ -429,7 +489,13 @@ class WeightUnknown(APIView):
 
     def put(self, request, account_id):
         data = request.data
-        profile = get_object_or_404(m.UserProfile, account_id=account_id)
+        try:
+            profile = get_object_or_404(m.UserProfile, account_id=account_id)
+        except ValidationError:
+            return Response({
+                "result": 'False',
+                "message": 'Account id incorrect.'
+            }, 202)
         date = data.get('measured')
         if not date:
             return Response({
@@ -465,7 +531,13 @@ class WeightUnknown(APIView):
         })
     def delete(self, request, account_id):
         data = request.data
-        profile = get_object_or_404(m.UserProfile, account_id=account_id)
+        try:
+            profile = get_object_or_404(m.UserProfile, account_id=account_id)
+        except ValidationError:
+            return Response({
+                "result": 'False',
+                "message": 'Account id incorrect.'
+            }, 202)
         wId = data.get('id')
         if len(m.WeightUnknown.objects.filter(id=wId)):
             m.WeightUnknown.objects.filter(id=wId).delete()
