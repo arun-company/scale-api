@@ -80,6 +80,44 @@ class UserInfo(APIView):
             "result": False
         }, 400)
 
+class UserResetPassword(APIView):
+    permission_classes = (IsAuthenticated,)
+
+    def get(self, request, account_id):
+        # return Response({'account_id': account_id})
+        profile = get_object_or_404(m.UserProfile, account_id=account_id)
+        # self.check_object_permissions(request, zone)
+        serializer = s.UPS(profile)
+        return Response(serializer.data)
+    def patch(self, request, account_id, format=None):
+        data = request.data
+        profile = get_object_or_404(m.UserProfile, account_id=account_id)
+
+        if (profile):
+            user_id = profile.user_id
+            user = get_object_or_404(m.User, id=user_id)
+            if data.get('password'):
+                user.set_password(data.get('password'))
+                user.save()
+            
+            return Response({
+                "result": True
+            })
+        return Response({
+                "result": False
+            }, 202)
+
+    def delete(self, request, account_id):
+        # user = get_object_or_404(User, id=pk)
+        profile = get_object_or_404(m.UserProfile, account_id=account_id)
+        if profile.delete():
+            return Response({
+                "result": True
+            }, 200)
+        return Response({
+            "result": False
+        }, 400)
+
 
 class UserRegister(APIView):
     def post(self, request):
@@ -295,7 +333,7 @@ class Weight(APIView):
             BWR=data.get('BWR'),
             MMR=data.get('MMR'),
             BD=data.get('BD'),
-            measured=data.get('measured'),
+            measured= data.get('measured'),
             legacy=0
         )
         if weight:
@@ -380,7 +418,7 @@ class WeightUnknown(APIView):
     def get(self, request, account_id):
         data = request.query_params
         device_id = data.get('device_id')
-        print(device_id)
+
         if device_id:
             weight_unknow = m.WeightUnknown.objects.filter(device_id=device_id)
             serializer = s.WeightUnknownSerializer(weight_unknow, many=True)
@@ -389,9 +427,23 @@ class WeightUnknown(APIView):
             "result": "missing device_id"
         })
 
-    def post(self, request, account_id):
+    def put(self, request, account_id):
         data = request.data
         profile = get_object_or_404(m.UserProfile, account_id=account_id)
+        date = data.get('measured')
+        if not date:
+            return Response({
+                'result': False,
+                'message': 'measured field required'
+            }, 202)
+        try:
+            measured = datetime.strptime(date, '%Y-%m-%d')
+        except:
+            return Response({
+                'result': False,
+                'message': 'Dateformat incorrect.'
+            }, 202)
+           
         weight =  m.WeightUnknown.objects.create(
             account_id=account_id,
             device_id=data.get('device_id'),
@@ -401,7 +453,7 @@ class WeightUnknown(APIView):
             BWR=data.get('BWR'),
             MMR=data.get('MMR'),
             BD=data.get('BD'),
-            measured=data.get('measured'),
+            measured=measured,
             legacy=0
         )
         if weight:

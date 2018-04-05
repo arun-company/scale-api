@@ -12,6 +12,8 @@ urlpatterns = [
     url(r'^user/(?P<account_id>[0-9a-f-]*)/weight$', views.Weight.as_view()),
     url(r'^user/(?P<account_id>[0-9a-f-]*)/averageweight$', views.AverageWeight.as_view()),
     url(r'^user/(?P<account_id>[0-9a-f-]*)/weight_unknown$', views.WeightUnknown.as_view()),
+    url(r'^user/(?P<account_id>[0-9a-f-]*)/reset_password$', views.UserResetPassword.as_view()),
+    
     
     url(r'^auth/registration/$', views.UserRegister.as_view()),
     # url(r'^auth/signin$', views.UserRegister.as_view()),

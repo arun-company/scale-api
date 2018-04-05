@@ -59,12 +59,13 @@ class WeightSerializer(s.ModelSerializer):
     # BWR = s.FloatField(required=True)
     # MMR = s.FloatField(required=True)
     # BD = s.FloatField(required=True)
-    measured = s.DateTimeField(format='%Y-%m-%d %H:%M:%S')
+    # measured = s.DateTimeField(format='%Y-%m-%d', required=True)
     class Meta:
         model = m.Weight
         fields = ('id','weight','BMI','BFR', 'BWR', 'MMR', 'BD', 'measured')
 
 class WeightUnknownSerializer(s.ModelSerializer):
+    # measured = s.DateTimeField(format='%Y-%m-%d', required=True)
     class Meta:
         model = m.WeightUnknown
         fields = ('id','weight','BMI','BFR', 'BWR', 'MMR', 'BD', 'measured', 'device_id')
@@ -127,7 +128,7 @@ class TokenSerializer(s.ModelSerializer):
     account_id = s.SerializerMethodField('get_user_profile')
     class Meta:
         model = TokenModel
-        fields = ('token','account_id')
+        fields = ('account_id','token')
     def get_token_name(self, obj):
         return obj.key
     def get_user_name(self, obj):
@@ -164,6 +165,7 @@ class CreateUserSerializer(s.ModelSerializer):
         user.set_password(validated_data['password'])
         user.save()
         return user
+
 
 class UpdateUserSerial(s.ModelSerializer):
     email =  s.CharField(max_length=50, validators=[UniqueValidator(queryset=User.objects.all())])

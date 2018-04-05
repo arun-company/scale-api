@@ -127,7 +127,7 @@ class WeightUnknown(models.Model):
     MMR = models.FloatField(blank=True,default=0,null=True)
     BD = models.FloatField(blank=True,default=0,null=True)
     legacy = models.SmallIntegerField()
-    measured = models.DateTimeField(auto_now_add=True)
+    measured = models.DateTimeField()
     added = models.DateTimeField(auto_now_add=True)
     device_id = models.CharField(max_length=255, blank=True,default=None,null=True)
     class Meta:
