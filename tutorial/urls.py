@@ -18,6 +18,7 @@ from rest_framework import routers
 from tutorial.quickstart import views
 from tutorial.quickstart import views as main_view
 from health import views as health_view
+from django.contrib import admin
 
 router = routers.DefaultRouter()
 
@@ -31,7 +32,7 @@ urlpatterns = [
     url(r'^', include(router.urls)),
     # url(r'^', include('snippets.urls')),
     url(r'^casapi/v1.0/', include('health.urls')),
-
+    url(r'^admin/', admin.site.urls),
     url(r'^casapi/v1.0/auth/', include('rest_auth.urls')),
     # url(r'^auth/registration/', include('rest_auth.registration.urls'))
 

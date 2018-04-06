@@ -42,12 +42,10 @@ INSTALLED_APPS = [
     'rest_auth',
     'allauth',
     'allauth.account',
-    'allauth.socialaccount',
+    'admin_reorder',
     'django.contrib.sites',
     'rest_auth.registration',
-    'health.apps.HealthConfig',
-    'allauth.socialaccount.providers.facebook',
-    'allauth.socialaccount.providers.twitter',
+    'health.apps.HealthConfig'
 ]
 
 MIDDLEWARE = [
@@ -58,6 +56,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'admin_reorder.middleware.ModelAdminReorder',
 ]
 SITE_ID = 1 
 REST_SESSION_LOGIN = False
@@ -158,3 +157,23 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'static/')
+# MEDIA_URL = "/static/"
+
+ADMIN_REORDER = (
+    {'app': 'auth', 'models': (
+        'auth.User',
+        'authtoken.Token',
+    )},
+    {'app': 'health', 'label': 'Health' , 'models': (
+        'health.Member',
+        'health.Account',
+    )},
+    {'app': 'health', 'label': 'Health Plus' , 'models': (
+        'health.Family',
+        'health.FamilyWeight',
+    )},
+    {'app': 'health', 'label': 'Weight' , 'models': (
+        'health.Weight',
+        'health.WeightUnknown',
+    )},
+)
