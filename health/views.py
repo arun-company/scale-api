@@ -503,37 +503,38 @@ class WeightUnknown(APIView):
         data = request.data
         try:
             get_object_or_404(m.UserProfile, account_id=account_id)
+            date = data.get('measured')
+            if not date:
+                return Response({
+                    'result': False,
+                    'message': 'measured field required'
+                }, 202)
+            weight =  m.WeightUnknown.objects.create(
+                account_id=account_id,
+                device_id=data.get('device_id'),
+                weight=data.get('weight'),
+                BMI=data.get('BMI'),
+                BFR=data.get('BFR'),
+                BWR=data.get('BWR'),
+                MMR=data.get('MMR'),
+                BD=data.get('BD'),
+                measured=date,
+                legacy=0
+            )
         except ValidationError:
             return Response({
                 "result": 'False',
                 "message": 'Account id incorrect.'
             }, 202)
-        date = data.get('measured')
-        if not date:
-            return Response({
-                'result': False,
-                'message': 'measured field required'
-            }, 202)
-        try:
-            measured = datetime.strptime(date, '%Y-%m-%d')
-        except:
-            return Response({
-                'result': False,
-                'message': 'Dateformat incorrect.'
-            }, 202)
-           
-        weight =  m.WeightUnknown.objects.create(
-            account_id=account_id,
-            device_id=data.get('device_id'),
-            weight=data.get('weight'),
-            BMI=data.get('BMI'),
-            BFR=data.get('BFR'),
-            BWR=data.get('BWR'),
-            MMR=data.get('MMR'),
-            BD=data.get('BD'),
-            measured=measured,
-            legacy=0
-        )
+       
+        # try:
+        #     measured = datetime.strptime(date, '%Y-%m-%d')
+        # except:
+        #     return Response({
+        #         'result': False,
+        #         'message': 'Dateformat incorrect.'
+        #     }, 202)
+        
         if weight:
             return Response({
                 'result': True
