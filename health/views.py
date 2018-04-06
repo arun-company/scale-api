@@ -435,7 +435,7 @@ class Weight(APIView):
             return Response({
                 "result": 'False',
                 "message": 'Account id incorrect.'
-            }, 202)
+            }, 400)
         wIds = data.get('ids').split(',')
         # serial = s.WeightSerializer(m.Weight.objects.filter(id__in=wIds,account_id=account_id), many=True)
         # return Response({
@@ -445,10 +445,10 @@ class Weight(APIView):
             m.Weight.objects.filter(id__in=wIds, account_id=account_id).delete()
             return Response({
                 'result': True
-            })
+            },204)
         return Response({
                 'result': False
-            })
+            }, 202)
 
 
 class AverageWeight(APIView):
@@ -587,7 +587,7 @@ class WeightUnknown(APIView):
             m.WeightUnknown.objects.filter(id__in=wIds).delete()
             return Response({
                 'result': True
-            })
+            }, 204)
         return Response({
                 'result': False
-            })
+            },202)
