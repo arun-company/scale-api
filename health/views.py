@@ -1,6 +1,7 @@
 from rest_framework import viewsets
 from django.shortcuts import get_object_or_404
 from django.core.exceptions import ValidationError
+# from django.core.exceptions.standarderror import ValueError
 from django.utils.timezone import now
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -268,7 +269,7 @@ class MigrateOldAccount(APIView):
             return Response({
                 "accountConfirmed": 'False',
                 "message": 'Account id incorrect.'
-            }, 202)
+            }, 400)
         data = request.data
         # return Response(data)
         health_email = data.get('health_email')
@@ -317,7 +318,7 @@ class MigrateOldFamilyMember(APIView):
             return Response({
                 "result": 'False',
                 "message": 'Account id incorrect.'
-            }, 202)
+            }, 400)
         data = request.data
         EMAIL_REGEX = re.compile(r"^[A-Za-z0-9\.\+_-]+@[A-Za-z0-9\._-]+\.[a-zA-Z]*$")
         if EMAIL_REGEX.match(data['family_email']):
@@ -351,7 +352,13 @@ class Weight(APIView):
         data = request.query_params
         date = data.get('date')
         if date:
-            minDate = datetime.strptime(date, '%Y-%m-%d')
+            try:
+                minDate = datetime.strptime(date, '%Y-%m-%d')
+            except ValueError:
+                return Response({
+                    "result": 'False',
+                    "message": 'Date format is incorrect.'
+                }, 400)
             maxDate = datetime(minDate.year, minDate.month, minDate.day, 23, 59, 59)
             weight = m.Weight.objects.filter(measured__gte=minDate,
                                     measured__lte=maxDate, account_id=account_id)
@@ -359,7 +366,14 @@ class Weight(APIView):
             return Response(serializer.data)
         elif data.get('month'):
             date = data.get('month')
-            newDate = datetime.strptime(date, '%Y-%m-%d')
+            try:
+                newDate = datetime.strptime(date, '%Y-%m')
+            except ValueError:
+                return Response({
+                    "result": 'False',
+                    "message": 'Date format is incorrect.'
+                }, 400)
+           
             minDate = datetime(newDate.year, newDate.month, 1, 0, 0,0)
             maxDate = datetime(newDate.year, newDate.month+1, 1)
             weight = m.Weight.objects.filter(measured__gte=minDate,
@@ -368,7 +382,13 @@ class Weight(APIView):
             return Response(serializer.data)
         elif data.get('year'):
             date = data.get('year')
-            newDate = datetime.strptime(date, '%Y-%m-%d')
+            try:
+                newDate = datetime.strptime(date, '%Y')
+            except ValueError:
+                return Response({
+                    "result": 'False',
+                    "message": 'Date format is incorrect.'
+                }, 400)
             minDate = datetime(newDate.year, 1, 1, 0, 0,0)
             maxDate = datetime(newDate.year+1, 1, 1)
             weight = m.Weight.objects.filter(measured__gte=minDate,
@@ -435,17 +455,15 @@ class AverageWeight(APIView):
     permission_classes = (IsAuthenticated,)
     def get(self, request, account_id):
         data = request.query_params
-        date = data.get('date')
-        if date:
-            minDate = datetime.strptime(date, '%Y-%m-%d')
-            maxDate = datetime(minDate.year, minDate.month, minDate.day, 23, 59, 59)
-            weight = m.Weight.objects.filter(measured__gte=minDate,
-                                    measured__lte=maxDate, account_id=account_id)
-            serializer = s.WeightSerializer(weight, many=True)
-            return Response(serializer.data)
-        elif data.get('month'):
+        if data.get('month'):
             date = data.get('month')
-            newDate = datetime.strptime(date, '%Y-%m-%d')
+            try:
+                newDate = datetime.strptime(date, '%Y-%m')
+            except ValueError:
+                return Response({
+                    "result": 'False',
+                    "message": 'Date format is incorrect.'
+                }, 400)
             minDate = datetime(newDate.year, newDate.month, 1, 0, 0,0)
             maxDate = datetime(newDate.year, newDate.month+1, 1)
             weight = m.Weight.objects.filter(measured__gte=minDate, measured__lt=maxDate, account_id=account_id).extra({'filtertime' : "date(measured)"}).values("filtertime").annotate(
@@ -464,7 +482,13 @@ class AverageWeight(APIView):
             return Response(serializer.data)
         elif data.get('year'):
             date = data.get('year')
-            newDate = datetime.strptime(date, '%Y-%m-%d')
+            try:
+                newDate = datetime.strptime(date, '%Y')
+            except ValueError:
+                return Response({
+                    "result": 'False',
+                    "message": 'Date format is incorrect.'
+                }, 400)
             minDate = datetime(newDate.year, 1, 1, 0, 0,0)
             maxDate = datetime(newDate.year+1, 1, 1)
             weight = m.Weight.objects.filter(measured__gte=minDate, measured__lt=maxDate, account_id=account_id).extra({'filtertime' : "MONTH(DATE(measured))"}).values("filtertime").annotate(
@@ -482,7 +506,10 @@ class AverageWeight(APIView):
             print(weight)
             serializer = s.AverageWeightMonthlySerializer(weight, many=True)
             return Response(serializer.data)
-        return Response(data)
+        return Response({
+                    "result": False,
+                    "message": "An argument should be Month or Year."
+                }, 400)
 
 
 class WeightUnknown(APIView):
