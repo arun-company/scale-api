@@ -191,7 +191,14 @@ class ExistingMember(APIView):
     # permission_classes = (IsAuthenticated,)
     def post(self, request, pk):
         data = request.data
-        member = get_object_or_404(m.Account, email=data['email'])
+        try:
+            member = get_object_or_404(m.Account, email=data['email'])
+        except ValidationError:
+            return Response({
+                "result": 'False',
+                "message": 'Member email not found.'
+            }, 202)
+
         if member:
             return Response({
                 "status" : "Success!",
@@ -376,12 +383,7 @@ class Weight(APIView):
         data = request.data
         try:
             profile = get_object_or_404(m.UserProfile, account_id=account_id)
-        except ValidationError:
-            return Response({
-                "result": 'False',
-                "message": 'Account id incorrect.'
-            }, 202)
-        weight =  m.Weight.objects.create(
+            weight =  m.Weight.objects.create(
             account_id=account_id,
             weight=data.get('weight'),
             BMI=data.get('BMI'),
@@ -392,6 +394,12 @@ class Weight(APIView):
             measured= data.get('measured'),
             legacy=0
         )
+        except ValidationError:
+            return Response({
+                "result": 'False',
+                "message": "Input fields incorrect."
+            }, 202)
+       
         if weight:
             return Response({
                 'result': True
@@ -400,17 +408,21 @@ class Weight(APIView):
             'result': False
         })
     def delete(self, request, account_id):
-        data = request.data
+        data = request.query_params
         try:
-            profile = get_object_or_404(m.UserProfile, account_id=account_id)
+            get_object_or_404(m.UserProfile, account_id=account_id)
         except ValidationError:
             return Response({
                 "result": 'False',
                 "message": 'Account id incorrect.'
             }, 202)
-        
-        if len(m.Weight.objects.filter(id=data.get('id'), account_id=account_id)):
-            m.Weight.objects.filter(id=data.get('id'), account_id=account_id).delete()
+        wIds = data.get('ids').split(',')
+        # serial = s.WeightSerializer(m.Weight.objects.filter(id__in=wIds,account_id=account_id), many=True)
+        # return Response({
+        #     'result': serial.data
+        # })
+        if len(m.Weight.objects.filter(id__in=wIds, account_id=account_id)):
+            m.Weight.objects.filter(id__in=wIds, account_id=account_id).delete()
             return Response({
                 'result': True
             })
@@ -490,7 +502,7 @@ class WeightUnknown(APIView):
     def put(self, request, account_id):
         data = request.data
         try:
-            profile = get_object_or_404(m.UserProfile, account_id=account_id)
+            get_object_or_404(m.UserProfile, account_id=account_id)
         except ValidationError:
             return Response({
                 "result": 'False',
@@ -530,17 +542,21 @@ class WeightUnknown(APIView):
             'result': False
         })
     def delete(self, request, account_id):
-        data = request.data
+        data = request.query_params
         try:
-            profile = get_object_or_404(m.UserProfile, account_id=account_id)
+            get_object_or_404(m.UserProfile, account_id=account_id)
         except ValidationError:
             return Response({
                 "result": 'False',
                 "message": 'Account id incorrect.'
             }, 202)
-        wId = data.get('id')
-        if len(m.WeightUnknown.objects.filter(id=wId)):
-            m.WeightUnknown.objects.filter(id=wId).delete()
+        wIds = data.get('ids').split(',')
+        # serial = s.WeightUnknownSerializer(m.WeightUnknown.objects.filter(id__in=wIds), many=True)
+        # return Response({
+        #     'result': serial.data
+        # })
+        if len(m.WeightUnknown.objects.filter(id__in=wIds)):
+            m.WeightUnknown.objects.filter(id__in=wIds).delete()
             return Response({
                 'result': True
             })

@@ -113,7 +113,7 @@ class Weight(models.Model):
     MMR = models.FloatField(blank=True,default=0,null=True)
     BD = models.FloatField(blank=True,default=0,null=True)
     legacy = models.SmallIntegerField()
-    measured = models.DateTimeField(auto_now_add=True)
+    measured = models.DateTimeField()
     added = models.DateTimeField(auto_now_add=True)
     class Meta:
         db_table = 'weights'
@@ -141,7 +141,7 @@ class WeightRecord(models.Model):
     member_id = models.CharField(max_length=255, blank=True,default=None,null=True)
     device_id = models.CharField(max_length=255, blank=True,default=None,null=True)
     device_sn = models.CharField(max_length=255, blank=True,default=None,null=True)
-    measurement_date = models.DateTimeField(auto_now_add=True)
+    measurement_date = models.DateTimeField()
     weight = models.FloatField()
     bmi = models.FloatField()
     pbf = models.FloatField()
