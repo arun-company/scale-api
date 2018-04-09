@@ -398,28 +398,53 @@ class Weight(APIView):
         profile = get_object_or_404(m.UserProfile, account_id=account_id)
         print(request)
         return Response(data)
-
+    
     def put(self, request, account_id):
-        data = request.data
+        data = request.data.get('datas')
+        weight = False
+        if not data: 
+            return Response({
+                    'result': False,
+                    'message': 'Datas have to be array.'
+                }, 400)
         try:
             profile = get_object_or_404(m.UserProfile, account_id=account_id)
-            weight =  m.Weight.objects.create(
+        except ValidationError:
+            return Response({
+                "result": False,
+                "message": "Account Id not found."
+            }, 400)
+    
+        try:
+           arrayWeights = json.loads(data)
+           for weightData in arrayWeights:
+               if not weightData.get('weight') or not weightData.get('measured'):
+                   return Response({
+                        "result": False,
+                        "message": "weight and measured can not be null."
+                    }, 400)
+               weight =  m.Weight.objects.create(
                             account_id=account_id,
-                            weight=data.get('weight'),
-                            BMI=data.get('BMI'),
-                            BFR=data.get('BFR'),
-                            BWR=data.get('BWR'),
-                            MMR=data.get('MMR'),
-                            BD=data.get('BD'),
-                            measured= data.get('measured'),
+                            weight=weightData.get('weight'),
+                            BMI=weightData.get('BMI'),
+                            BFR=weightData.get('BFR'),
+                            BWR=weightData.get('BWR'),
+                            MMR=weightData.get('MMR'),
+                            BD=weightData.get('BD'),
+                            measured= weightData.get('measured'),
                             legacy=0
                         )
         except ValidationError:
             return Response({
-                "result": 'False',
-                "message": "Input fields incorrect."
-            }, 202)
-       
+                "result": False,
+                "message": "Input Fields incorrect."
+            }, 400)
+        except Exception:
+            return Response({
+                "result": False,
+                "message": "Json datas are incorrect."
+            }, 400)
+            
         if weight:
             return Response({
                 'result': True
@@ -527,48 +552,53 @@ class WeightUnknown(APIView):
         })
 
     def put(self, request, account_id):
-        data = request.data
+        data = request.data.get('datas')
+        weight = False
+        if not data: 
+            return Response({
+                    'result': False,
+                    'message': 'Datas have to be array.'
+                }, 400)
         try:
             get_object_or_404(m.UserProfile, account_id=account_id)
-            date = data.get('measured')
-            if not date:
-                return Response({
-                    'result': False,
-                    'message': 'measured field required'
-                }, 202)
-            weight =  m.WeightUnknown.objects.create(
-                account_id=account_id,
-                device_id=data.get('device_id'),
-                weight=data.get('weight'),
-                BMI=data.get('BMI'),
-                BFR=data.get('BFR'),
-                BWR=data.get('BWR'),
-                MMR=data.get('MMR'),
-                BD=data.get('BD'),
-                measured=date,
-                legacy=0
-            )
+            arrayWeights = json.loads(data)
+
+            for weightData in arrayWeights:
+                if not weightData.get('weight') or not weightData.get('measured'):
+                    return Response({
+                        "result": False,
+                        "message": "weight and measured can not be null."
+                    }, 400)
+                weight =  m.WeightUnknown.objects.create(
+                    account_id=account_id,
+                    device_id=weightData.get('device_id'),
+                    weight=weightData.get('weight'),
+                    BMI=weightData.get('BMI'),
+                    BFR=weightData.get('BFR'),
+                    BWR=weightData.get('BWR'),
+                    MMR=weightData.get('MMR'),
+                    BD=weightData.get('BD'),
+                    measured=weightData.get('measured'),
+                    legacy=0
+                )
         except ValidationError:
             return Response({
                 "result": 'False',
                 "message": "Input fields incorrect."
-            }, 202)
-       
-        # try:
-        #     measured = datetime.strptime(date, '%Y-%m-%d')
-        # except:
-        #     return Response({
-        #         'result': False,
-        #         'message': 'Dateformat incorrect.'
-        #     }, 202)
+            }, 400)
+        except Exception:
+            return Response({
+                "result": False,
+                "message": "Json format are incorrect."
+            }, 400)
         
         if weight:
             return Response({
                 'result': True
-            })
+            },201)
         return Response({
             'result': False
-        })
+        },400)
     def delete(self, request, account_id):
         data = request.query_params
         try:
