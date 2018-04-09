@@ -400,12 +400,12 @@ class Weight(APIView):
         return Response(data)
     
     def put(self, request, account_id):
-        data = request.data.get('datas')
+        data = request.data
         weight = False
         if not data: 
             return Response({
                     'result': False,
-                    'message': 'Datas have to be array.'
+                    'message': 'Data have to be array.'
                 }, 400)
         try:
             profile = get_object_or_404(m.UserProfile, account_id=account_id)
@@ -416,8 +416,7 @@ class Weight(APIView):
             }, 400)
     
         try:
-           arrayWeights = json.loads(data)
-           for weightData in arrayWeights:
+           for weightData in data:
                if not weightData.get('weight') or not weightData.get('measured'):
                    return Response({
                         "result": False,
@@ -552,7 +551,7 @@ class WeightUnknown(APIView):
         })
 
     def put(self, request, account_id):
-        data = request.data.get('datas')
+        data = request.data
         weight = False
         if not data: 
             return Response({
@@ -561,9 +560,8 @@ class WeightUnknown(APIView):
                 }, 400)
         try:
             get_object_or_404(m.UserProfile, account_id=account_id)
-            arrayWeights = json.loads(data)
 
-            for weightData in arrayWeights:
+            for weightData in data:
                 if not weightData.get('weight') or not weightData.get('measured'):
                     return Response({
                         "result": False,
