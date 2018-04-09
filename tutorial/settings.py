@@ -165,12 +165,11 @@ ADMIN_REORDER = (
         'authtoken.Token',
     )},
     {'app': 'health', 'label': 'Health' , 'models': (
-        'health.Member',
         'health.Account',
     )},
     {'app': 'health', 'label': 'Health Plus' , 'models': (
         'health.Family',
-        'health.FamilyWeight',
+        'health.Profile',
     )},
     {'app': 'health', 'label': 'Weight' , 'models': (
         'health.Weight',

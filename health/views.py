@@ -404,16 +404,16 @@ class Weight(APIView):
         try:
             profile = get_object_or_404(m.UserProfile, account_id=account_id)
             weight =  m.Weight.objects.create(
-            account_id=account_id,
-            weight=data.get('weight'),
-            BMI=data.get('BMI'),
-            BFR=data.get('BFR'),
-            BWR=data.get('BWR'),
-            MMR=data.get('MMR'),
-            BD=data.get('BD'),
-            measured= data.get('measured'),
-            legacy=0
-        )
+                            account_id=account_id,
+                            weight=data.get('weight'),
+                            BMI=data.get('BMI'),
+                            BFR=data.get('BFR'),
+                            BWR=data.get('BWR'),
+                            MMR=data.get('MMR'),
+                            BD=data.get('BD'),
+                            measured= data.get('measured'),
+                            legacy=0
+                        )
         except ValidationError:
             return Response({
                 "result": 'False',
@@ -551,7 +551,7 @@ class WeightUnknown(APIView):
         except ValidationError:
             return Response({
                 "result": 'False',
-                "message": 'Account id incorrect.'
+                "message": "Input fields incorrect."
             }, 202)
        
         # try:

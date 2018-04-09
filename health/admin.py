@@ -12,12 +12,13 @@ admin.site.register(models.Member, MemberAdmin)
 class AccountAdmin(admin.ModelAdmin):
     list_display = ('id','app', 'acc_id','carrier','username','password','email','mobile', 'client_id', 'name')
    
+
 admin.site.register(models.Account, AccountAdmin )
 
-class FamilyWeightAdmin(admin.ModelAdmin):
-    list_display = ('seq','profile_id', 'family_no','weight','state','created','updated')
+class FamilyMemberAdmin(admin.ModelAdmin):
+    list_display = ('profile_id','family_no', 'nickname','birth','gender','height','secret','secret_email', 'secret_pw', 'updated','created','state')
    
-admin.site.register(models.FamilyWeight, FamilyWeightAdmin )
+admin.site.register(models.Profile, FamilyMemberAdmin )
 
 class FamilyAdmin(admin.ModelAdmin):
     list_display = ('family_no','family_id', 'email','password','family_name','image','updated')

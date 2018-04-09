@@ -69,6 +69,7 @@ class Family(models.Model):
     class Meta:
         db_table = 'healthplus_family'
         ordering = ('created',)
+        verbose_name = 'Familie'
 
 # Health Plus APP
 class FamilyWeight(models.Model):
@@ -103,6 +104,7 @@ class Profile(models.Model):
     class Meta:
         db_table = 'healthplus_profile'
         ordering = ('created',)
+        verbose_name = 'Member'
 
 class Weight(models.Model):
     account_id = models.CharField(max_length=255, blank=True,default=None,null=True)
