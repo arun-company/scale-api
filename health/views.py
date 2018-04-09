@@ -448,10 +448,10 @@ class Weight(APIView):
         if weight:
             return Response({
                 'result': True
-            })
+            },201)
         return Response({
             'result': False
-        })
+        },400)
     def delete(self, request, account_id):
         data = request.query_params
         try:
