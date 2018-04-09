@@ -12,6 +12,8 @@ from health import serializers as s
 from django.contrib.auth.models import User
 from django.utils.timezone import now
 from rest_framework import status
+from rest_framework.parsers import FileUploadParser
+from django.core.files.storage import FileSystemStorage
 from datetime import datetime
 from django.db.models import Count, Avg, Max, Min
 
@@ -619,3 +621,14 @@ class WeightUnknown(APIView):
         return Response({
                 'result': False
             },202)
+
+class FileUploadView(APIView):
+    parser_classes = (FileUploadParser,)
+
+    def put(self, request, filename, format=None):
+        profile_image = request.data['file']
+        fs = FileSystemStorage()
+        myfile = fs.save('profile.png', profile_image)
+        uploaded_file_url = fs.url(myfile)
+ 
+        return Response(status=204)
