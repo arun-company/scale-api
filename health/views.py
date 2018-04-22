@@ -625,10 +625,12 @@ class WeightUnknown(APIView):
 class FileUploadView(APIView):
     parser_classes = (FileUploadParser,)
 
-    def put(self, request, filename, format=None):
-        profile_image = request.data['file']
+    def put(self, request, format=None):
+        image = request.FILES['filename']
+        print(image)
+        # UserProfile = m.UserProfile.objects.filter(id=19).update(image=image)
         fs = FileSystemStorage()
-        myfile = fs.save('profile.png', profile_image)
+        myfile = fs.save('profile.png', image)
         uploaded_file_url = fs.url(myfile)
  
         return Response(status=204)

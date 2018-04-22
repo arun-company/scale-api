@@ -12,7 +12,7 @@ urlpatterns = [
     url(r'^user/(?P<account_id>[0-9a-f-]*)/weight$', views.Weight.as_view()),
     url(r'^user/(?P<account_id>[0-9a-f-]*)/averageweight$', views.AverageWeight.as_view()),
     url(r'^user/(?P<account_id>[0-9a-f-]*)/weight_unknown$', views.WeightUnknown.as_view()),
-    url(r'^user/profile/(?P<filename>[^/]+)$', views.FileUploadView.as_view()),
+    url(r'^update/profile', views.FileUploadView.as_view()),
 
     
     

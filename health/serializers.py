@@ -185,3 +185,17 @@ class CreateProfileSerialzer(s.ModelSerializer):
         )
         profile.save()
         return profile
+
+class ImageProfile(s.ModelSerializer):
+    class Meta:
+        model = m.UserProfile
+
+class ImageProfileSerializer(s.HyperlinkedModelSerializer):
+    image = s.SlugRelatedField(
+        read_only=True,
+        slug_field='id'
+    )
+
+    class Meta:
+        model = m.UserProfile
+        read_only_fields = ('image')

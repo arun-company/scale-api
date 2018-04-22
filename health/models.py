@@ -174,7 +174,7 @@ class UserProfile(models.Model):
     birthday = models.DateTimeField(default=None, blank=True, null=True)
     gender = models.SmallIntegerField(default=1)
     height = models.FloatField(default=0)
-    image = models.CharField(max_length=255)
+    image =  models.FileField(upload_to='profile/')
     state = models.BooleanField(default=True)
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now_add=True)
