@@ -647,7 +647,6 @@ class FileUploadView(APIView):
                 'result': 'Missing Image File.'
             },400)
         image = request.FILES['image']
-        
         if not image.name[-3:].lower() in ['jpg', 'png']:
             return Response({
                 'result': 'Accept only jpg and png file.'
@@ -682,3 +681,18 @@ class FileUploadView(APIView):
         return Response({
                 'image': str(profile.image)
             },200)
+
+    def delete(self, request, account_id, format=None):
+        data = request.query_params
+        try:
+            profile = get_object_or_404(m.UserProfile, account_id=account_id)
+        except ValidationError:
+            return Response({
+                "result": 'False',
+                "message": 'Account id incorrect.'
+            }, 202)
+
+        UserProfile = m.UserProfile.objects.filter(id=profile.id).update(image="")
+        return Response({
+                'image': ''
+            },204)
