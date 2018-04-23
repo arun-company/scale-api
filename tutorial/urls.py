@@ -19,6 +19,9 @@ from tutorial.quickstart import views
 from tutorial.quickstart import views as main_view
 from health import views as health_view
 from django.contrib import admin
+from django.conf import settings
+from django.conf.urls.static import static
+
 
 router = routers.DefaultRouter()
 
@@ -37,4 +40,5 @@ urlpatterns = [
     # url(r'^auth/registration/', include('rest_auth.registration.urls'))
 
     # url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework'))
-]
+]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+

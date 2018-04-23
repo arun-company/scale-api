@@ -12,7 +12,8 @@
 /env/
 MANIFEST
 coverage.*
-
+/static/
+/media/
 !.editorconfig
 !.gitignore
 !.travis.yml

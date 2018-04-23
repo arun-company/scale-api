@@ -16,10 +16,16 @@ from rest_framework.parsers import FileUploadParser
 from django.core.files.storage import FileSystemStorage
 from datetime import datetime
 from django.db.models import Count, Avg, Max, Min
+from rest_framework.parsers import MultiPartParser
+from django.conf.urls.static import static
+from django.conf import settings
+
+
 
 # import datetime as dtime
 import json
 import re
+import datetime
 
 class UserViewList(viewsets.ModelViewSet):
     """
@@ -623,14 +629,56 @@ class WeightUnknown(APIView):
             },202)
 
 class FileUploadView(APIView):
-    parser_classes = (FileUploadParser,)
+    permission_classes = (IsAuthenticated,)
+    parser_classes = (MultiPartParser,)
 
-    def put(self, request, format=None):
-        image = request.FILES['filename']
-        print(image)
-        # UserProfile = m.UserProfile.objects.filter(id=19).update(image=image)
+    def post(self, request, account_id, format=None):
+        data = request.query_params
+        try:
+            profile = get_object_or_404(m.UserProfile, account_id=account_id)
+        except ValidationError:
+            return Response({
+                "result": 'False',
+                "message": 'Account id incorrect.'
+            }, 202)
+
+        if not request.FILES.get('image'):
+            return Response({
+                'result': 'Missing Image File.'
+            },400)
+        image = request.FILES['image']
+        
+        if not image.name[-3:].lower() in ['jpg', 'png']:
+            return Response({
+                'result': 'Accept only jpg and png file.'
+            },400)
+
+        limit = 1 * 1024 * 1024 #1MB
+        if (image.size > limit) :
+            return Response({
+                'result': 'Image profile should less then 1MB.'
+            },400)
+        # name, extension = os.path.splitext(image.name)
         fs = FileSystemStorage()
-        myfile = fs.save('profile.png', image)
+        today = datetime.datetime.today().strftime('%B/%d')
+        profile_id = str(profile.id) + '/' + str(today)
+
+        myfile = fs.save(profile_id + '/profile.png', image)
         uploaded_file_url = fs.url(myfile)
+        UserProfile = m.UserProfile.objects.filter(id=profile.id).update(image=uploaded_file_url)
  
-        return Response(status=204)
+        return Response({
+                'image': str(uploaded_file_url)
+            },200)
+    def get(self, request, account_id, format=None):
+        data = request.query_params
+        try:
+           profile =   get_object_or_404(m.UserProfile, account_id=account_id)
+        except ValidationError:
+            return Response({
+                "result": 'False',
+                "message": 'Account id incorrect.'
+            }, 202)
+        return Response({
+                'image': str(profile.image)
+            },200)
