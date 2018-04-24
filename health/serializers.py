@@ -4,6 +4,10 @@ from rest_auth.models import TokenModel
 from health import models as m
 from django.contrib.auth.models import User
 from rest_framework.validators import UniqueValidator
+from django.utils.translation import ugettext_lazy as _
+from rest_framework.compat import authenticate
+from rest_framework.exceptions import AuthenticationFailed
+
 
 
 class ProfileSerializer(s.ModelSerializer):
@@ -126,9 +130,15 @@ class TokenSerializer(s.ModelSerializer):
     """
     token = s.SerializerMethodField('get_token_name')
     account_id = s.SerializerMethodField('get_user_profile')
+    email = s.CharField(label=_("Email"))
+    password = s.CharField(
+        label=_("Password"),
+        style={'input_type': 'password'},
+        trim_whitespace=False
+    )
     class Meta:
         model = TokenModel
-        fields = ('account_id','token')
+        fields = ('account_id','token','email', 'password')
     def get_token_name(self, obj):
         return obj.key
     def get_user_name(self, obj):
@@ -136,6 +146,29 @@ class TokenSerializer(s.ModelSerializer):
     def get_user_profile(self, obj):
         profile = m.UserProfile.objects.filter(user_id=obj.user.id)
         return profile[0].account_id
+    def validate(self, attrs):
+        email = attrs.get('email')
+        password = attrs.get('password')
+        health_password = attrs.get('health_password')
+        
+        if email and password:
+            user = authenticate(request=self.context.get('request'),
+                                email=email, password=password)
+
+            # The authenticate call simply returns None for is_active=False
+            # users. (Assuming the default ModelBackend authentication
+            # backend.)
+            if not user:
+                msg = _('Unable to log in with provided credentials.')
+                raise AuthenticationFailed(msg, code='authorization')
+
+        else:
+            msg = _('Must include "heatl_password", "email" and "password".')
+            raise s.ValidationError(msg, code='authorization')
+
+        attrs['user'] = user
+        return attrs    
+
 
 class CreateUserSerializer(s.ModelSerializer):
     password = s.CharField(write_only=True)

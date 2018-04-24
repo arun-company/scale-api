@@ -19,7 +19,9 @@ from django.db.models import Count, Avg, Max, Min
 from rest_framework.parsers import MultiPartParser
 from django.conf.urls.static import static
 from django.conf import settings
-
+from rest_framework.authtoken.views import ObtainAuthToken
+from rest_framework.authtoken.models import Token
+from rest_framework.exceptions import  AuthenticationFailed, ValidationError as s_ValidationError
 
 
 # import datetime as dtime
@@ -696,3 +698,50 @@ class FileUploadView(APIView):
         return Response({
                 'image': ''
             },204)
+
+class CustomAuthToken(ObtainAuthToken):
+    serializer_class = s.TokenSerializer
+    
+       
+    def post(self, request, *args, **kwargs):
+        
+        try:
+            data = request.data
+            serializer = self.serializer_class(data=request.data,
+                                           context={'request': request})
+            serializer.is_valid(raise_exception=True)
+            user = serializer.validated_data['user']
+        except AuthenticationFailed:
+            health_email = data.get('email')
+            health_password = data.get('health_password')
+            healthAccount = m.Account.objects.filter(email=health_email, password=health_password)
+            health= 0
+            if (healthAccount):
+                health= 1
+            return Response({
+                "result": 'Unable to log in',
+                "account_type": health
+            }, 400)
+        except s_ValidationError:
+            return Response({
+                "result": 'Missing fields, email, password and health_password are required',
+                "account_type": 0
+            }, 400)
+        except KeyError:
+            return Response({
+                "result": 'Unable to log in with provided credentials.',
+                "account_type": 0
+            }, 400)
+        # health_email = data.get('email')
+        # health_password = data.get('health_password')
+        # healthAccount = m.Account.objects.filter(email=health_email, password=health_password)
+        # health= False
+        # if (healthAccount):
+        #     health= True
+        token, created = Token.objects.get_or_create(user=user)
+        profile = m.UserProfile.objects.filter(user_id=user.pk)
+        return Response({
+            'account_id': profile[0].account_id,
+            'token': token.key,
+            'account_type':0
+        })
