@@ -25,7 +25,7 @@ from django.conf import settings
 # import datetime as dtime
 import json
 import re
-import datetime
+import datetime as dtime
 
 class UserViewList(viewsets.ModelViewSet):
     """
@@ -659,7 +659,7 @@ class FileUploadView(APIView):
             },400)
         # name, extension = os.path.splitext(image.name)
         fs = FileSystemStorage()
-        today = datetime.datetime.today().strftime('%B/%d')
+        today = dtime.datetime.today().strftime('%B/%d')
         profile_id = str(profile.id) + '/' + str(today)
 
         myfile = fs.save(profile_id + '/profile.png', image)
