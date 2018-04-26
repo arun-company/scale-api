@@ -45,7 +45,8 @@ INSTALLED_APPS = [
     'admin_reorder',
     'django.contrib.sites',
     'rest_auth.registration',
-    'health.apps.HealthConfig'
+    'health.apps.HealthConfig',
+    'health_aws_smtp.apps.HealthAwsSmtpConfig'
 ]
 
 MIDDLEWARE = [
@@ -112,7 +113,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.mysql', 
         'NAME': 'casapi',
         'USER': 'root',
-        'PASSWORD': '',
+        'PASSWORD': 'root1234',
         'HOST': 'localhost',   # Or an IP Address that your DB is hosted on
         'PORT': '3306',
     }
@@ -180,4 +181,3 @@ ADMIN_REORDER = (
 # MEDIA_ROOT = '/Users/neobidam/dev/scale-api/media'
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
-

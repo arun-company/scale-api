@@ -22,6 +22,8 @@ from django.conf import settings
 from rest_framework.authtoken.views import ObtainAuthToken
 from rest_framework.authtoken.models import Token
 from rest_framework.exceptions import  AuthenticationFailed, ValidationError as s_ValidationError
+from django.core.mail import send_mail
+
 
 
 # import datetime as dtime
@@ -704,7 +706,16 @@ class CustomAuthToken(ObtainAuthToken):
     
        
     def post(self, request, *args, **kwargs):
-        
+        send = send_mail(
+            'Testing Mail',
+            'Here is the message.',
+            'no-reply@mylitmus.cloud',
+            ['odom.chorn@arun.company'],
+            fail_silently=True,
+        )
+        return  Response({
+            'sending': send
+        })
         try:
             data = request.data
             serializer = self.serializer_class(data=request.data,

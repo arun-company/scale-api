@@ -15,6 +15,7 @@ urlpatterns = [
     url(r'^api/v1/', include('health.urls')),
     url(r'^admin/', admin.site.urls),
     url(r'^api/v1/auth/', include('rest_auth.urls')),
+    url(r'^password', include('health_aws_smtp.urls')),
     
 ]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
