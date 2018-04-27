@@ -709,8 +709,16 @@ class CustomAuthToken(ObtainAuthToken):
     
        
     def post(self, request, *args, **kwargs):
+
         try:
             data = request.data
+            health_password = data.get('health_password')
+            
+            if not health_password:
+                return Response({
+                    "result": 'health_password is required',
+                }, 400)
+
             serializer = self.serializer_class(data=request.data,
                                            context={'request': request})
             serializer.is_valid(raise_exception=True)
