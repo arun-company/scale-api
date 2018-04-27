@@ -22,7 +22,9 @@ from django.conf import settings
 from rest_framework.authtoken.views import ObtainAuthToken
 from rest_framework.authtoken.models import Token
 from rest_framework.exceptions import  AuthenticationFailed, ValidationError as s_ValidationError
-from django.core.mail import send_mail
+# from django.core.mail import send_mail
+from django.core.mail import EmailMultiAlternatives
+
 
 
 
@@ -706,16 +708,6 @@ class CustomAuthToken(ObtainAuthToken):
     
        
     def post(self, request, *args, **kwargs):
-        send = send_mail(
-            'Testing Mail',
-            'Here is the message.',
-            'no-reply@mylitmus.cloud',
-            ['odom.chorn@arun.company'],
-            fail_silently=True,
-        )
-        return  Response({
-            'sending': send
-        })
         try:
             data = request.data
             serializer = self.serializer_class(data=request.data,
@@ -756,3 +748,29 @@ class CustomAuthToken(ObtainAuthToken):
             'token': token.key,
             'account_type':0
         })
+
+class ResetPassword(APIView):
+    def post(self, request, format=None):
+        email = request.data.get('email')
+        if email:
+            user = m.User.objects.filter(email=email)
+            if user[0]:
+                subject, from_email, to = 'Reset Password', 'no-reply@mail.mylitmus.cloud', 'odom.chorn@arun.company'
+                text_content = ''
+                html_content = '<p>You have been request for the reset password <a href="https://www.microsoft.com/en-us/">Reset Password</a> Link.</p>'
+                msg = EmailMultiAlternatives(subject, text_content, from_email, [to])
+                msg.attach_alternative(html_content, "text/html")
+                send = msg.send()
+
+                return  Response({
+                    'sending': send
+                })
+            else:
+                Response({
+                    'result': False,
+                    'message': "User not found"
+                }, 400)
+        return  Response({
+                'result': False,
+                'message': "Email can not be null."
+        }, 400)
