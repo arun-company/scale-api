@@ -182,3 +182,10 @@ class UserProfile(models.Model):
     class Meta:
         db_table = 'user_profile'
         ordering = ('created',)
+
+class ResetPassword(models.Model):
+    account_id = models.CharField(max_length=255)
+    code =  models.UUIDField(unique=True, default=uuid.uuid4, editable=False)
+    created = models.DateTimeField(auto_now_add=True)
+    class Meta:
+        db_table = 'reset_password'
