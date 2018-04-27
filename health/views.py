@@ -658,12 +658,11 @@ class FileUploadView(APIView):
                 'result': 'Accept only jpg and png file.'
             },400)
 
-        limit = 1 * 1024 * 1024 #1MB
+        limit = 10 * 1024 * 1024 #1MB
         if (image.size > limit) :
-                
-            # return Response({
-            #     'result': 'Image profile should less then 1MB.'
-            # },400)
+            return Response({
+                'result': 'Image profile should less then 10MB.'
+            },400)
         
         # name, extension = os.path.splitext(image.name)
         fs = FileSystemStorage()
@@ -723,19 +722,24 @@ class CustomAuthToken(ObtainAuthToken):
             health= 0
             if (healthAccount):
                 health= 1
+            else:
+                healthAccount = m.Account.objects.filter(email=health_email)
+                print (healthAccount)
+                if (healthAccount):
+                    health= 2
             return Response({
-                "result": 'Unable to log in',
-                "account_type": health
+                "result": 'Unable to log in with provided credentials.',
+                "login_status": health
             }, 400)
         except s_ValidationError:
             return Response({
                 "result": 'Missing fields, email, password and health_password are required',
-                "account_type": 0
+                "login_status": 0
             }, 400)
         except KeyError:
             return Response({
                 "result": 'Unable to log in with provided credentials.',
-                "account_type": 0
+                "login_status": 0
             }, 400)
         # health_email = data.get('email')
         # health_password = data.get('health_password')
@@ -748,7 +752,7 @@ class CustomAuthToken(ObtainAuthToken):
         return Response({
             'account_id': profile[0].account_id,
             'token': token.key,
-            'account_type':0
+            'login_status':0
         })
 
 class ResetPassword(APIView):
