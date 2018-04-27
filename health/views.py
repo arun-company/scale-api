@@ -660,9 +660,11 @@ class FileUploadView(APIView):
 
         limit = 1 * 1024 * 1024 #1MB
         if (image.size > limit) :
-            return Response({
-                'result': 'Image profile should less then 1MB.'
-            },400)
+                
+            # return Response({
+            #     'result': 'Image profile should less then 1MB.'
+            # },400)
+        
         # name, extension = os.path.splitext(image.name)
         fs = FileSystemStorage()
         today = dtime.datetime.today().strftime('%B/%d')
