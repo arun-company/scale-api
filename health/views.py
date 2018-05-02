@@ -24,6 +24,11 @@ from rest_framework.authtoken.models import Token
 from rest_framework.exceptions import  AuthenticationFailed, ValidationError as s_ValidationError
 # from django.core.mail import send_mail
 from django.core.mail import EmailMultiAlternatives
+from django.shortcuts import render
+from django.template import loader
+from django.template import Context
+
+from PIL import Image
 
 
 
@@ -652,6 +657,7 @@ class FileUploadView(APIView):
             return Response({
                 'result': 'Missing Image File.'
             },400)
+        size = 256, 256
         image = request.FILES['image']
         if not image.name[-3:].lower() in ['jpg', 'png']:
             return Response({
@@ -769,9 +775,11 @@ class ResetPassword(APIView):
         if email:
             user = m.User.objects.filter(email=email)
             if user[0]:
-                subject, from_email, to = 'Reset Password', 'no-reply@mail.mylitmus.cloud', 'odom.chorn@arun.company'
+                subject, from_email, to = 'Reset Password', 'no-reply@mail.mylitmus.cloud', email
                 text_content = ''
-                html_content = '<p>You have been request for the reset password <a href="https://www.microsoft.com/en-us/">Reset Password</a> Link.</p>'
+                d = { 'username': 1212 }
+                email_template     = loader.get_template('email/reset-password-inline.html')
+                html_content = email_template.render(d)
                 msg = EmailMultiAlternatives(subject, text_content, from_email, [to])
                 msg.attach_alternative(html_content, "text/html")
                 send = msg.send()

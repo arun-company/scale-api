@@ -1,6 +1,7 @@
 from django.http import HttpResponse
 from django.shortcuts import render
 from django.template import loader
+from django.core.mail import EmailMultiAlternatives
 
 import datetime
 
@@ -20,14 +21,16 @@ def reset_password_form(request, account_id):
             # process the data in form.cleaned_data as required
             # ...
             # redirect to a new URL:
+            # Sending Email Template
             template = loader.get_template('main.html')
+            
             context = {
                 'latest_question_list': 'google',
             }
             return HttpResponse(template.render(context, request))
     # now = datetime.datetime.now()
     # html = "<html><body>It is now %s. %s</body></html>" %now  %now
-    template = loader.get_template('main.html')
+    
     context = {
         'latest_question_list': '',
         'link_expire': True
