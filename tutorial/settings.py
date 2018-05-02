@@ -113,7 +113,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.mysql', 
         'NAME': 'casapi',
         'USER': 'root',
-        'PASSWORD': 'root1234',
+        'PASSWORD': '',
         'HOST': 'localhost',   # Or an IP Address that your DB is hosted on
         'PORT': '3306',
     }
@@ -188,3 +188,4 @@ EMAIL_PORT = 465
 EMAIL_HOST_USER = 'AKIAJP4X6DKVXRKEOOEQ'
 EMAIL_HOST_PASSWORD = ''
 EMAIL_USE_TLS = True
+
