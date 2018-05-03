@@ -1,35 +1,42 @@
 {% extends "layout/home.html" %}
-
-{% block title %}Reset Password{% endblock %}
+{% load staticfiles %}
+{% block title %}Password Update{% endblock %}
 
 {% block content %}
-<div class="row">
-    <div class="col-sm-8 col-sm-offset-2">
-        <br><br><br><br>
-        {% if not link_expire %} 
-
-          {% if latest_question_list%}
-            <h1 class="text text-info">Password reset successfully.</h1>
-          {% else %}
-            <h1 class="text text-info">Reset Password</h1>
-            <form action="" method="POST">
-                <div class="form-group">
-                  <label for="pwd">Password:</label>
-                  <input type="password" required pattern=".{6}" title="Minimum password length is 6" class="form-control" name="password" id="pwd">
-                </div>
-                {% csrf_token %}
-                <div class="form-group">
-                    <label for="pwd2">Confirm Password:</label>
-                    <input type="password" required  pattern=".{6}"  title="Minimum password length is 6" class="form-control" name="password-confirm" id="pwd2">
-                  </div>
-                <button type="submit" class="btn btn-default">Submit</button>
-              </form>
-          {% endif %} 
-      {% else %}    
-        <h1 class="text text-info">Password reset expired.</h1>
-      {% endif %} 
+<div class="cas-brand-block"><img src="{% static 'images/untitled.png' %}" width="100" class="cas-image"></div>
+<div class="cas-email-message-block">
+  <h2 class="cas-email-message-title-heading">비밀번호 변경</h2>
+  <div class="cas-email-message-body-block">
+    <div class="cas-email-message-text-block">{{username}} 님의 비밀번호 변경을 위해 새로운 비밀번호를 입력해주세요.</div>
+  </div>
+  <div class="cas-form-block w-form">
+    {% if success %}
+    <div class="w-form-done" style="display: block;">
+      <div>{{msg}}</div> 
     </div>
+    {% endif %}
+    {% if fail %}
+    <div class="w-form-fail" style="display: block;">
+      <!-- <div>비밀번호 변경이 실패했습니다! 잠시 후 다시 시도해주세요.</div> -->
+      <div>{{msg}}</div> 
+      
+    </div>
+    <br>
+    {% endif %}
+    {% if not success %}
+    <form id="wf-form-CAS-Form" method="POST" data-name="CAS Form" class="form">
+      <label for="password">새 비밀번호를 입력하세요</label>
+      <input type="password" class="w-input" maxlength="256" autofocus="true" name="password1" id="password" required="">
+      
+      <label for="password-2">새 비밀번호를 다시 입력하세요</label>
+      <input type="password" class="w-input" maxlength="256" autofocus="true" name="password2" id="password-2" required="">
+      {% csrf_token %}
+      <input type="submit" value="요청" data-wait="잠시 기다려주십시오." class="cas-button w-button">
+    </form>
+    {% endif %}
+  </div>
 </div>
-
   
 {% endblock %}
+
+

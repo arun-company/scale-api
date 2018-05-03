@@ -1,5 +1,6 @@
 from rest_framework import viewsets
 from django.shortcuts import get_object_or_404
+from django.contrib.sites.shortcuts import get_current_site
 from django.core.exceptions import ValidationError
 # from django.core.exceptions.standarderror import ValueError
 from django.utils.timezone import now
@@ -712,7 +713,6 @@ class FileUploadView(APIView):
 
 class CustomAuthToken(ObtainAuthToken):
     serializer_class = s.TokenSerializer
-    
        
     def post(self, request, *args, **kwargs):
 
@@ -755,12 +755,6 @@ class CustomAuthToken(ObtainAuthToken):
                 "result": 'Unable to log in with provided credentials.',
                 "login_status": 0
             }, 400)
-        # health_email = data.get('email')
-        # health_password = data.get('health_password')
-        # healthAccount = m.Account.objects.filter(email=health_email, password=health_password)
-        # health= False
-        # if (healthAccount):
-        #     health= True
         token, created = Token.objects.get_or_create(user=user)
         profile = m.UserProfile.objects.filter(user_id=user.pk)
         return Response({
@@ -773,11 +767,16 @@ class ResetPassword(APIView):
     def post(self, request, format=None):
         email = request.data.get('email')
         if email:
-            user = m.User.objects.filter(email=email)
-            if user[0]:
-                subject, from_email, to = 'Reset Password', 'no-reply@mail.mylitmus.cloud', email
+            profile = m.UserProfile.objects.filter(user__email=email)
+            
+            if profile[0]:
+                path = request.path 
+                subject, from_email, to = 'CAS 비밀번호 변경 요청', 'no-reply@mail.mylitmus.cloud', email
                 text_content = ''
-                d = { 'username': 1212 }
+                user_profile = profile[0]
+                code = m.ResetPassword.objects.create(account_id=user_profile.account_id)
+                site_url = settings.BASE_URL
+                d = { 'name': user_profile.name , 'link': site_url + '/auth/password-update/'+str(code.code)}
                 email_template     = loader.get_template('email/reset-password-inline.html')
                 html_content = email_template.render(d)
                 msg = EmailMultiAlternatives(subject, text_content, from_email, [to])
@@ -785,7 +784,8 @@ class ResetPassword(APIView):
                 send = msg.send()
 
                 return  Response({
-                    'sending': send
+                    'sending': send,
+                    # 'url': path
                 })
             else:
                 Response({

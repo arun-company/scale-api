@@ -2,38 +2,62 @@ from django.http import HttpResponse
 from django.shortcuts import render
 from django.template import loader
 from django.core.mail import EmailMultiAlternatives
-
+from django.shortcuts import get_object_or_404
+from health.models import ResetPassword, User, UserProfile
+from django.core.exceptions import ValidationError
 import datetime
 
 from django import forms
 
 class PasswordFrom(forms.Form):
-    password = forms.CharField(label='Password', max_length=100)
+    password1 = forms.CharField(label='Password', max_length=100)
+    password2 = forms.CharField(label='Password', max_length=100)
 
-def reset_password_form(request, account_id):
+def reset_password_form(request, code):
+    
+    try:
+        code = get_object_or_404(ResetPassword, code=code)
+        profile = get_object_or_404(UserProfile, account_id=code.account_id)
+        user = get_object_or_404(User, id=profile.user_id)
+        
+        context = {
+                'username': profile.name,
+            }
+    except Exception:
+        context = {
+            'Fail':'code not found',
+            }
+        template = loader.get_template('error.html')
+        return HttpResponse(template.render(context, request))
 
-
+    template = loader.get_template('main.html')
     if request.method == 'POST':
     # create a form instance and populate it with data from the request:
-        form = PasswordFrom(request.POST)
-    # check whether it's valid:
-        if form.is_valid():
-            # process the data in form.cleaned_data as required
-            # ...
-            # redirect to a new URL:
-            # Sending Email Template
-            template = loader.get_template('main.html')
-            
-            context = {
-                'latest_question_list': 'google',
-            }
-            return HttpResponse(template.render(context, request))
-    # now = datetime.datetime.now()
-    # html = "<html><body>It is now %s. %s</body></html>" %now  %now
-    
-    context = {
-        'latest_question_list': '',
-        'link_expire': True
-    }
+        if request.POST:
+            post = request.POST
+            if post.get('password1') == post.get('password2'):
+                user.set_password(post.get('password1'))
+                user.save()
+                ResetPassword.objects.filter(account_id = profile.account_id).delete()
+                #TODO: Will Send Success Message.
+                # subject, from_email, to = 'CAS 비밀번호 변경 요청', 'no-reply@mail.mylitmus.cloud', email
+                # text_content = ''
+                # site_url = settings.BASE_URL
+                # d = { 'name': profile.name}
+                # email_template     = loader.get_template('email/reset-password-inline.html')
+                # html_content = email_template.render(d)
+                # msg = EmailMultiAlternatives(subject, text_content, from_email, [to])
+                # msg.attach_alternative(html_content, "text/html")
+                # send = msg.send()
+                context = {
+                    'success':True,
+                    'msg' :'비밀번호 변경이 성공했습니다 !'
+                }
+
+            else:
+                context = {
+                    'fail': True,
+                    'msg': "Password Confirmation doesn't match"
+                }
+        
     return HttpResponse(template.render(context, request))
-    # return render(request, 'health_aws_smtp/templates/', {})
