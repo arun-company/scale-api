@@ -769,7 +769,7 @@ class ResetPassword(APIView):
         if email:
             profile = m.UserProfile.objects.filter(user__email=email)
             
-            if profile[0]:
+            if profile:
                 path = request.path 
                 subject, from_email, to = 'CAS 비밀번호 변경 요청', 'no-reply@mail.mylitmus.cloud', email
                 text_content = ''
@@ -784,11 +784,10 @@ class ResetPassword(APIView):
                 send = msg.send()
 
                 return  Response({
-                    'sending': send,
-                    # 'url': path
+                    'result': True,
                 })
             else:
-                Response({
+                return Response({
                     'result': False,
                     'message': "User not found"
                 }, 400)

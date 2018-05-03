@@ -5,6 +5,7 @@ from django.core.mail import EmailMultiAlternatives
 from django.shortcuts import get_object_or_404
 from health.models import ResetPassword, User, UserProfile
 from django.core.exceptions import ValidationError
+from django.core.mail import EmailMultiAlternatives
 import datetime
 
 from django import forms
@@ -39,16 +40,14 @@ def reset_password_form(request, code):
                 user.set_password(post.get('password1'))
                 user.save()
                 ResetPassword.objects.filter(account_id = profile.account_id).delete()
-                #TODO: Will Send Success Message.
-                # subject, from_email, to = 'CAS 비밀번호 변경 요청', 'no-reply@mail.mylitmus.cloud', email
-                # text_content = ''
-                # site_url = settings.BASE_URL
-                # d = { 'name': profile.name}
-                # email_template     = loader.get_template('email/reset-password-inline.html')
-                # html_content = email_template.render(d)
-                # msg = EmailMultiAlternatives(subject, text_content, from_email, [to])
-                # msg.attach_alternative(html_content, "text/html")
-                # send = msg.send()
+                subject, from_email, to = 'CAS 비밀번호 변경 알림', 'no-reply@mail.mylitmus.cloud', user.email
+                text_content = ''
+                d = { 'name': profile.name}
+                email_template     = loader.get_template('email/success.html')
+                html_content = email_template.render(d)
+                msg = EmailMultiAlternatives(subject, text_content, from_email, [to])
+                msg.attach_alternative(html_content, "text/html")
+                send = msg.send()
                 context = {
                     'success':True,
                     'msg' :'비밀번호 변경이 성공했습니다 !'
