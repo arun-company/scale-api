@@ -47,7 +47,7 @@ def reset_password_form(request, code):
             post = request.POST
             if post.get('password1') == post.get('password2'):
                 en_password = make_password(password=post.get('password1'), salt='cassaltmore', hasher='pbkdf2_sha1_cas')
-                password = en_password.split('$')[3]) 
+                password = en_password.split('$')[3]
                 user.set_password(password)
                 user.save()
                 code.delete()
