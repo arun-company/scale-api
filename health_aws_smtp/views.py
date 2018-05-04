@@ -15,6 +15,9 @@ class PasswordFrom(forms.Form):
     password1 = forms.CharField(label='Password', max_length=100)
     password2 = forms.CharField(label='Password', max_length=100)
 
+def home_view(request):
+    template = loader.get_template('error.html')
+    return HttpResponse(template.render({}, request))
 
 def reset_password_form(request, code):
     
@@ -51,7 +54,7 @@ def reset_password_form(request, code):
                 user.set_password(password)
                 user.save()
                 code.delete()
-                subject, from_email, to = 'CAS 비밀번호 변경 알림', 'no-reply@mail.mylitmus.cloud', user.email
+                subject, from_email, to = 'CAS 비밀번호 변경 알림', settings.EMAIL_FROM, user.email
                 text_content = ''
                 d = { 'name': profile.name}
                 email_template     = loader.get_template('email/success.html')

@@ -73,6 +73,9 @@ REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework.authentication.TokenAuthentication',
     ),
+    'DEFAULT_RENDERER_CLASSES': (
+        'rest_framework.renderers.JSONRenderer',
+    )
     # 'EXCEPTION_HANDLER': 'health.utils.custom_exception_handler'
 }
 ROOT_URLCONF = 'tutorial.urls'
@@ -190,6 +193,7 @@ ADMIN_REORDER = (
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
+EMAIL_FROM = 'CAS No Reply <cas-no-reply@mail.mylitmus.cloud>'
 EMAIL_BACKEND = 'django_smtp_ssl.SSLEmailBackend'
 EMAIL_HOST = 'email-smtp.us-west-2.amazonaws.com'
 EMAIL_PORT = 465
@@ -198,4 +202,3 @@ EMAIL_HOST_PASSWORD = ''
 EMAIL_USE_TLS = True
 
 BASE_URL="http://localhost:8000"
-

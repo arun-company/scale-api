@@ -771,7 +771,7 @@ class ResetPassword(APIView):
             
             if profile:
                 path = request.path 
-                subject, from_email, to = 'CAS 비밀번호 변경 요청', 'no-reply@mail.mylitmus.cloud', email
+                subject, from_email, to = 'CAS 비밀번호 변경 요청', settings.EMAIL_FROM, email
                 text_content = ''
                 user_profile = profile[0]
                 m.ResetPassword.objects.filter(account_id = user_profile.account_id).delete()
