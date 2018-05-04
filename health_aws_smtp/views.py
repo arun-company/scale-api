@@ -7,6 +7,7 @@ from health.models import ResetPassword, User, UserProfile
 from django.core.exceptions import ValidationError
 from django.core.mail import EmailMultiAlternatives
 from django.contrib.auth.hashers import make_password
+from django.conf import settings
 import datetime
 
 from django import forms
