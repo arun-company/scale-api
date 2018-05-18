@@ -20,6 +20,13 @@ def home_view(request):
     template = loader.get_template('error.html')
     return HttpResponse(template.render({}, request))
 
+def encrype_password(request):
+    en_password = make_password(password="cascas", salt='cassaltmore', hasher='pbkdf2_sha1_cas')
+    password = en_password.split('$')[3]
+    print(password)
+    template = loader.get_template('error.html')
+    return HttpResponse(template.render({}, request))
+    
 def reset_password_form(request, code):
     
     try:

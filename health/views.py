@@ -658,7 +658,6 @@ class FileUploadView(APIView):
             return Response({
                 'result': 'Missing Image File.'
             },400)
-        size = 256, 256
         image = request.FILES['image']
         if not image.name[-3:].lower() in ['jpg', 'png']:
             return Response({
@@ -667,6 +666,7 @@ class FileUploadView(APIView):
 
         limit = 10 * 1024 * 1024 #1MB
         if (image.size > limit) :
+
             return Response({
                 'result': 'Image profile should less then 10MB.'
             },400)
@@ -785,7 +785,7 @@ class ResetPassword(APIView):
                 send = msg.send()
 
                 return  Response({
-                    'result': True,
+                    'result': send,
                 })
             else:
                 return Response({
