@@ -487,8 +487,8 @@ class Weight(APIView):
         # })
         if len(m.Weight.objects.filter(id__in=wIds, account_id=account_id)):
             m.Weight.objects.filter(id__in=wIds, account_id=account_id).delete()
-            return Response('',204)
-        return Response('', 202)
+            return Response(True, status=204, headers={"content-length":0})
+        return Response(True, status=202, headers={"content-length":0})
 
 
 class AverageWeight(APIView):
@@ -629,8 +629,8 @@ class WeightUnknown(APIView):
         # })
         if len(m.WeightUnknown.objects.filter(id__in=wIds)):
             m.WeightUnknown.objects.filter(id__in=wIds).delete()
-            return Response('', 204)
-        return Response('',202)
+            return Response(True, status=204, headers={"content-length":0})
+        return Response(True, status=202, headers={"content-length":0})
 
 class FileUploadView(APIView):
     permission_classes = (IsAuthenticated,)
@@ -699,7 +699,7 @@ class FileUploadView(APIView):
             }, 202)
 
         UserProfile = m.UserProfile.objects.filter(id=profile.id).update(image="")
-        return Response('',204)
+        return Response(True, status=204, headers={"content-length":0})
 
 class CustomAuthToken(ObtainAuthToken):
     serializer_class = s.TokenSerializer
